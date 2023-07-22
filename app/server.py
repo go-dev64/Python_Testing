@@ -5,13 +5,13 @@ bp = Blueprint("server", __name__)
 
 
 def loadClubs():
-    with open("clubs.json") as c:
+    with open("app\clubs.json") as c:
         listOfClubs = json.load(c)["clubs"]
         return listOfClubs
 
 
 def loadCompetitions():
-    with open("competitions.json") as comps:
+    with open("app\competitions.json") as comps:
         listOfCompetitions = json.load(comps)["competitions"]
         return listOfCompetitions
 
