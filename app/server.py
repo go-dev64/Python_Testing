@@ -5,14 +5,14 @@ bp = Blueprint("server", __name__)
 
 
 def loadClubs():
-    with open("app\clubs.json") as c:
-        listOfClubs = json.load(c)["clubs"]
+    with open("app/clubs.json") as club:
+        listOfClubs = json.load(club)["clubs"]
         return listOfClubs
 
 
 def loadCompetitions():
-    with open("app\competitions.json") as comps:
-        listOfCompetitions = json.load(comps)["competitions"]
+    with open("app/competitions.json") as comp:
+        listOfCompetitions = json.load(comp)["competitions"]
         return listOfCompetitions
 
 
@@ -31,10 +31,14 @@ def index():
 
 @bp.route("/showSummary", methods=["POST"])
 def showSummary():
+    error = None
     try:
-        # 
-    club = [club for club in clubs if club["email"] == request.form["email"]][0]
-    return render_template("welcome.html", club=club, competitions=competitions)
+        club = [club for club in clubs if club["email"] == request.form["email"]][0]
+    except:
+        error = "Oups, Email inconnue!"
+        return render_template("index.html", error=error), 403
+    else:
+        return render_template("welcome.html", club=club, competitions=competitions)
 
 
 @bp.route("/book/<competition>/<club>")

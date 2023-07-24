@@ -1,19 +1,13 @@
-from .conftest import client
-from app.server import showSummary
-
-
-def test_should_status_code_ok(client):
-    response = client.get("/")
-    data = response.data.decode()
+def test_email_is_db(client):
+    # check if email is in clubs email.
+    email = "admin@irontemple.com"
+    response = client.post("/showSummary", data={"email": email})
     assert response.status_code == 200
 
 
-# verifie si type email non ok => retrun msg error
-# verifie si email dans db => retrun ok
-# verifie si email absent db => return msg error
-
-
-def test_email_is_valid_type():
-    # check if email is a valid email.
-    bad_email = "qnvnqmer.cqze"
-    result = showSummary()
+def test_email_is_not_in_db(client):
+    # check if email is not in clubs email and retrun error msg.
+    email = "autremail"
+    response = client.post("/showSummary", data={"email": email})
+    assert b"error" in response.data
+    assert response.status_code == 404

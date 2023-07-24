@@ -15,7 +15,6 @@ flask-testing = "*"
 selenium = "*"
 pytest-flask = "*"
 locust = "*"
-email-validator = "*"
 
 [dev-packages]
 
