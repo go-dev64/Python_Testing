@@ -36,7 +36,7 @@ def showSummary():
         club = [club for club in clubs if club["email"] == request.form["email"]][0]
     except:
         error = "Oups, Email inconnue!"
-        return render_template("index.html", error=error), 403
+        return render_template("index.html", error=error), 400
     else:
         return render_template("welcome.html", club=club, competitions=competitions)
 

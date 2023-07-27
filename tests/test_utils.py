@@ -1,4 +1,5 @@
 from flask import template_rendered
+from contextlib import contextmanager
 
 
 def captured_templates(app, recorded, **extra):
