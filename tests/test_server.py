@@ -1,4 +1,16 @@
-def test_email_is_db(client):
+from app import server
+from app.server import showSummary
+
+
+def test_email_is_db(client, mocker):
+    # mock data json in clubs
+    mocker.patch.object(
+        server,
+        "clubs",
+        {"name": "Simply Lift", "email": "john@simplylift.co", "points": "13"},
+        {"name": "Iron Temple", "email": "admin@irontemple.com", "points": "4"},
+        {"name": "She Lifts", "email": "kate@shelifts.co.uk", "points": "12"},
+    )
     # check if email is in clubs email.
     email = "admin@irontemple.com"
     response = client.post("/showSummary", data={"email": email})
