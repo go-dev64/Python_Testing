@@ -1,7 +1,7 @@
 import json
 from flask import Blueprint, render_template, request, redirect, flash, url_for
 
-bp = Blueprint("server", __name__)
+bp = Blueprint("server", __name__, template_folder="templates")
 
 
 def loadClubs():
