@@ -3,7 +3,7 @@ from contextlib import contextmanager
 import pytest
 
 
-@contextmanager
+"""@contextmanager
 def captured_templates(app):
     recorded = []
 
@@ -14,14 +14,14 @@ def captured_templates(app):
     try:
         yield recorded
     finally:
-        template_rendered.disconnect(record, app)
+        template_rendered.disconnect(record, app)"""
 
 
-"""def captured_templates(app, recorded, **extra):
+def captured_templates(app, recorded, **extra):
     def record(sender, template, context):
         recorded.append((template, context))
 
-    return template_rendered.connected_to(record, app)"""
+    return template_rendered.connected_to(record, app)
 
 
 class MockReponse:
