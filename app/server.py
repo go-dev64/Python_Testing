@@ -34,7 +34,7 @@ def showSummary():
         error = "Oups, Email inconnue!"
         return render_template("index.html", error=error), 400
     else:
-        return render_template("welcome.html", club=club, competitions=competitions)
+        return render_template("welcome.html", club=club, competitions=competitions, list_of_clubs=clubs)
 
 
 @bp.route("/book/<competition>/<club>")
