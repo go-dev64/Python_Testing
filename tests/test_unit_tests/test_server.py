@@ -75,6 +75,6 @@ class TestBooking(MockReponse):
         assert b"error" in rv.data
 
     def test_booking_on_past_competition(self, client):
-        rv = client.post("/purchasePlaces", data=self.data)
+        rv = client.post("/book/<competition>/<club>", data=self.data)
         assert rv.status_code == 400
         assert b"error" in rv.data

@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, flash, url_for
 
 bp = Blueprint("server", __name__)
@@ -39,13 +40,22 @@ def showSummary():
 
 @bp.route("/book/<competition>/<club>")
 def book(competition, club):
-    foundClub = [c for c in clubs if c["name"] == club][0]
-    foundCompetition = [c for c in competitions if c["name"] == competition][0]
-    if foundClub and foundCompetition:
-        return render_template("booking.html", club=foundClub, competition=foundCompetition)
+    error = None
+    try:
+        foundClub = [c for c in clubs if c["name"] == club][0]
+        foundCompetition = [c for c in competitions if c["name"] == competition][0]
+        today = datetime.now()
+        print(today)
+        assert foundCompetition["date"] < today
+    except:
+        flash("Booking impossible, competiton already finished!")
+        return render_template("welcome.html", club=club, competitions=competitions), 400
     else:
-        flash("Something went wrong-please try again")
-        return render_template("welcome.html", club=club, competitions=competitions)
+        if foundClub and foundCompetition:
+            return render_template("booking.html", club=foundClub, competition=foundCompetition)
+        else:
+            flash("Something went wrong-please try again")
+            return render_template("welcome.html", club=club, competitions=competitions)
 
 
 @bp.route("/purchasePlaces", methods=["POST"])
