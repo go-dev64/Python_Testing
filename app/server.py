@@ -50,12 +50,20 @@ def book(competition, club):
 
 @bp.route("/purchasePlaces", methods=["POST"])
 def purchasePlaces():
-    competition = [c for c in competitions if c["name"] == request.form["competition"]][0]
-    club = [c for c in clubs if c["name"] == request.form["club"]][0]
-    placesRequired = int(request.form["places"])
-    competition["numberOfPlaces"] = int(competition["numberOfPlaces"]) - placesRequired
-    flash("Great-booking complete!")
-    return render_template("welcome.html", club=club, competitions=competitions)
+    error = None
+    try:
+        competition = [c for c in competitions if c["name"] == request.form["competition"]][0]
+        club = [c for c in clubs if c["name"] == request.form["club"]][0]
+        placesRequired = int(request.form["places"])
+        assert placesRequired > 0
+    except:
+        error = "Merci d'entrer un chiffre supperieur à Zéro!"
+        return render_template("booking.html", club=club, competition=competition, error=error), 400
+    else:
+        club["points"] = int(club["points"]) - placesRequired
+        competition["numberOfPlaces"] = int(competition["numberOfPlaces"]) - placesRequired
+        flash("Great-booking complete!")
+        return render_template("welcome.html", club=club, competitions=competitions)
 
 
 # TODO: Add route for points display
