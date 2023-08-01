@@ -65,9 +65,9 @@ def purchasePlaces():
         competition = [c for c in competitions if c["name"] == request.form["competition"]][0]
         club = [c for c in clubs if c["name"] == request.form["club"]][0]
         placesRequired = int(request.form["places"])
-        assert placesRequired > 0
+        assert 0 < placesRequired < 13
     except:
-        error = "Merci d'entrer un chiffre supperieur à Zéro!"
+        error = "Merci d'entrer un chiffre entre 1 et 12!"
         return render_template("booking.html", club=club, competition=competition, error=error), 400
     else:
         club["points"] = int(club["points"]) - placesRequired
