@@ -1,5 +1,6 @@
 import pytest
 from app import server
+from app.server import book
 from tests.test_utils import MockReponse
 
 
@@ -10,7 +11,7 @@ class TestEmail(MockReponse):
 
     def test_email_is_db(self, client, monkeypatch, captured_templates):
         # Mock clubs data json .
-        monkeypatch.setattr(server, "clubs", self.get_clubs())
+        self._mock_club_and_competition(monkeypatch)
 
         # Check if email is in clubs email.
         rv = client.post("/showSummary", data={"email": self.email})
@@ -21,7 +22,7 @@ class TestEmail(MockReponse):
 
     def test_email_is_not_in_db(self, client, monkeypatch, captured_templates):
         # Mock clubs data json .
-        monkeypatch.setattr(server, "clubs", self.get_clubs())
+        self._mock_club_and_competition(monkeypatch)
 
         # Check if email is not in clubs email and retrun error msg.
         rv = client.post("/showSummary", data={"email": self.bad_email})
@@ -32,7 +33,7 @@ class TestEmail(MockReponse):
 
     def test_data_returned(self, client, monkeypatch, captured_templates):
         # Check whether the context returned is that of the e-mail supplied.
-        monkeypatch.setattr(server, "clubs", self.get_clubs())
+        self._mock_club_and_competition(monkeypatch)
 
         rv = client.post("/showSummary", data={"email": self.email})
         template, context = captured_templates[0]
@@ -43,15 +44,14 @@ class TestEmail(MockReponse):
 
 class TestBooking(MockReponse):
     def setup_method(self):
-        self.data = {"club": "Simply Lift", "competition": "Spring Festival", "places": 2}
+        self.data = {"club": "toto", "competition": "Spring Festival", "places": 2}
 
     def test_soubstract_point_club(self, client, monkeypatch, captured_templates):
         """
         We are testing if ,after registering  for acompetition,
         the number of entries is deducted from club's points.
         """
-        monkeypatch.setattr(server, "clubs", self.get_clubs())
-        monkeypatch.setattr(server, "competitions", self.get_competitions())
+        self._mock_club_and_competition(monkeypatch)
         # We get club point before request.
         club = [c for c in server.clubs if c["name"] == self.data["club"]][0]
         nombre_point = int(club["points"])
@@ -62,11 +62,13 @@ class TestBooking(MockReponse):
         assert context["club"]["name"] == self.data["club"]
         assert int(context["club"]["points"]) == nombre_point - self.data["places"]
 
-    def test_input_is_positive_number(self, client):
+    def test_input_is_positive_number(self, client, monkeypatch):
+        self._mock_club_and_competition(monkeypatch)
         rv = client.post("/purchasePlaces", data=self.data)
         assert rv.status_code == 200
 
-    def test_input_is_negative_number(self, client):
+    def test_input_is_negative_number(self, client, monkeypatch):
+        self._mock_club_and_competition(monkeypatch)
         rv = client.post(
             "/purchasePlaces",
             data={"club": "Simply Lift", "competition": "Spring Festival", "places": -2},
@@ -74,7 +76,13 @@ class TestBooking(MockReponse):
         assert rv.status_code == 400
         assert b"error" in rv.data
 
-    def test_booking_on_past_competition(self, client):
-        rv = client.post("/book/<competition>/<club>", data=self.data)
+    def test_booking_on_past_competition(self, client, monkeypatch, captured_templates):
+        self._mock_club_and_competition(monkeypatch)
+        route = f"/book/{self.data['competition']}/{self.data['club']}"
+        rv = client.get(route)
+        template, context = captured_templates[0]
         assert rv.status_code == 400
-        assert b"error" in rv.data
+        assert template.name == "welcome.html"
+
+    def test_booking_with_future_competition(client, monkeypatch, captured_templates):
+        pass

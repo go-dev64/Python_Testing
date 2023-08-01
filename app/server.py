@@ -45,17 +45,16 @@ def book(competition, club):
         foundClub = [c for c in clubs if c["name"] == club][0]
         foundCompetition = [c for c in competitions if c["name"] == competition][0]
         today = datetime.now()
-        print(today)
-        assert foundCompetition["date"] < today
+        assert foundCompetition["date"] > today
     except:
-        flash("Booking impossible, competiton already finished!")
-        return render_template("welcome.html", club=club, competitions=competitions), 400
+        flash("Error: Booking impossible, competiton already finished!")
+        return render_template("welcome.html", club=foundClub, competitions=competitions, list_of_clubs=clubs), 400
     else:
         if foundClub and foundCompetition:
             return render_template("booking.html", club=foundClub, competition=foundCompetition)
         else:
-            flash("Something went wrong-please try again")
-            return render_template("welcome.html", club=club, competitions=competitions)
+            flash("Error: Something went wrong-please try again")
+            return render_template("welcome.html", club=club, competitions=competitions, list_of_clubs=clubs)
 
 
 @bp.route("/purchasePlaces", methods=["POST"])
