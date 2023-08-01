@@ -67,6 +67,8 @@ class TestBooking(MockReponse):
     def test_input_is_positive_number(self, client, monkeypatch):
         self._mock_club_and_competition(monkeypatch)
         rv = client.post("/purchasePlaces", data=self.data)
+
+        # Should return a status_code 200 with input > 0.
         assert rv.status_code == 200
 
     def test_input_is_negative_number(self, client, monkeypatch):
@@ -75,6 +77,8 @@ class TestBooking(MockReponse):
             "/purchasePlaces",
             data={"club": "Simply Lift", "competition": "Spring Festival", "places": -2},
         )
+
+        # Should return a status_code 400 with input < 0 and error rv.data.
         assert rv.status_code == 400
         assert b"error" in rv.data
 
@@ -83,7 +87,11 @@ class TestBooking(MockReponse):
         route = f"/book/{self.data['competition']}/{self.data['club']}"
         rv = client.get(route)
         template, context = captured_templates[0]
+
+        #  Should return a status_code 400 with date competition < today.
         assert rv.status_code == 400
+
+        # Check template returned
         assert template.name == "welcome.html"
 
     def test_booking_with_future_competition(self, client, monkeypatch, captured_templates):
@@ -92,7 +100,10 @@ class TestBooking(MockReponse):
         rv = client.get(route)
         template, context = captured_templates[0]
 
+        #  Should return a status_code 200 with date competition > today.
         assert rv.status_code == 200
+
+        # Check template returned and context.
         assert template.name == "booking.html"
         assert context["club"]["name"] == self.future_competition["club"]
         assert context["competition"]["name"] == self.future_competition["competition"]
