@@ -94,3 +94,5 @@ class TestBooking(MockReponse):
 
         assert rv.status_code == 200
         assert template.name == "booking.html"
+        assert context["club"]["name"] == self.future_competition["club"]
+        assert context["competition"]["name"] == self.future_competition["competition"]
