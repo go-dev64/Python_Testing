@@ -44,8 +44,9 @@ def book(competition, club):
     try:
         foundClub = [c for c in clubs if c["name"] == club][0]
         foundCompetition = [c for c in competitions if c["name"] == competition][0]
-        today = datetime.now()
-        assert foundCompetition["date"] > today
+        today = datetime.today().timestamp()
+        date_of_competition = datetime.strptime(foundCompetition["date"], "%Y-%m-%d %H:%M:%S").timestamp()
+        assert date_of_competition > today
     except:
         flash("Error: Booking impossible, competiton already finished!")
         return render_template("welcome.html", club=foundClub, competitions=competitions, list_of_clubs=clubs), 400

@@ -2,6 +2,7 @@ import pytest
 from app import server
 from app.server import book
 from tests.test_utils import MockReponse
+from datetime import datetime, date
 
 
 class TestEmail(MockReponse):
@@ -45,6 +46,7 @@ class TestEmail(MockReponse):
 class TestBooking(MockReponse):
     def setup_method(self):
         self.data = {"club": "toto", "competition": "Spring Festival", "places": 2}
+        self.future_competition = {"club": "toto", "competition": "next competition", "places": 2}
 
     def test_soubstract_point_club(self, client, monkeypatch, captured_templates):
         """
@@ -84,5 +86,11 @@ class TestBooking(MockReponse):
         assert rv.status_code == 400
         assert template.name == "welcome.html"
 
-    def test_booking_with_future_competition(client, monkeypatch, captured_templates):
-        pass
+    def test_booking_with_future_competition(self, client, monkeypatch, captured_templates):
+        self._mock_club_and_competition(monkeypatch)
+        route = f"/book/{self.future_competition['competition']}/{self.future_competition['club']}"
+        rv = client.get(route)
+        template, context = captured_templates[0]
+
+        assert rv.status_code == 200
+        assert template.name == "booking.html"
