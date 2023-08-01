@@ -82,6 +82,13 @@ class TestBooking(MockReponse):
         assert rv.status_code == 400
         assert b"error" in rv.data
 
+    def test_booking_with_more_than_twelves_places(self, client, monkeypatch, captured_templates):
+        data = {"club": "toto", "competition": "Spring Festival", "places": 13}
+        self._mock_club_and_competition(monkeypatch)
+        rv = client.post("/purchasePlaces", data=data)
+        # Should return a status_code 400 with places > 12 and error rv.data.
+        assert rv.status_code == 400
+
     def test_booking_on_past_competition(self, client, monkeypatch, captured_templates):
         self._mock_club_and_competition(monkeypatch)
         route = f"/book/{self.data['competition']}/{self.data['club']}"
