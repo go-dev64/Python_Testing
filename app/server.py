@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, flash, url_for
+from app.utils import LowerThanOneError, MaxPlacesError
 
 bp = Blueprint("server", __name__)
 
@@ -66,13 +67,13 @@ def purchasePlaces():
         club = [c for c in clubs if c["name"] == request.form["club"]][0]
         placesRequired = int(request.form["places"])
         if placesRequired < 1:
-            raise ArithmeticError
+            raise LowerThanOneError
         elif placesRequired > 12:
-            raise ValueError
-    except ArithmeticError:
+            raise MaxPlacesError
+    except LowerThanOneError:
         error = "Merci d'entrer un chiffre supperieur à zéro!"
         return render_template("booking.html", club=club, competition=competition, error=error), 400
-    except ValueError:
+    except placesRequired:
         error = "The maximum reservation is 12 places"
         return render_template("booking.html", club=club, competition=competition, error=error), 400
     else:
