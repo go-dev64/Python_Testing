@@ -1,49 +1,66 @@
 import pytest
 from app import server
-from app.server import book
-from tests.test_utils import MockReponse
-from datetime import datetime, date
+from tests.test_utils import Utils
 
 
-class TestEmail(MockReponse):
+class TestEmail(Utils):
     def setup_method(self):
         self.bad_email = "bademail"
         self.email = "admin@irontemple.com"
 
     def test_email_is_db(self, client, monkeypatch, captured_templates):
-        # Mock clubs data json .
-        self._mock_club_and_competition(monkeypatch)
+        """
+        Check if email is in clubs email.
+        """
+        rv, template, context = self.get_response_value_and_template_context(
+            captured_templates=captured_templates,
+            client=client,
+            method="POST",
+            monkeypatch=monkeypatch,
+            route="/showSummary",
+            data={"email": self.email},
+        )
 
-        # Check if email is in clubs email.
-        rv = client.post("/showSummary", data={"email": self.email})
-        template, context = captured_templates[0]
         assert rv.status_code == 200
         # Check template returned.
         assert template.name == "welcome.html"
 
     def test_email_is_not_in_db(self, client, monkeypatch, captured_templates):
-        # Mock clubs data json .
-        self._mock_club_and_competition(monkeypatch)
-
-        # Check if email is not in clubs email and retrun error msg.
-        rv = client.post("/showSummary", data={"email": self.bad_email})
-        template, context = captured_templates[0]
+        """
+        Check if bad email return code status 400 and error message
+        """
+        rv, template, context = self.get_response_value_and_template_context(
+            captured_templates=captured_templates,
+            client=client,
+            method="POST",
+            monkeypatch=monkeypatch,
+            route="/showSummary",
+            data=self.bad_email,
+        )
         assert rv.status_code == 400
         assert b"error" in rv.data
         assert template.name == "index.html"
 
     def test_data_returned(self, client, monkeypatch, captured_templates):
+        """
+        test should return wright context email and list of clubs.
+        """
         # Check whether the context returned is that of the e-mail supplied.
-        self._mock_club_and_competition(monkeypatch)
+        rv, template, context = self.get_response_value_and_template_context(
+            captured_templates=captured_templates,
+            client=client,
+            method="POST",
+            monkeypatch=monkeypatch,
+            route="/showSummary",
+            data={"email": self.email},
+        )
 
-        rv = client.post("/showSummary", data={"email": self.email})
-        template, context = captured_templates[0]
         assert context["club"]["email"] == self.email
         assert context["list_of_clubs"] == server.clubs
         assert len(context["list_of_clubs"]) > 0
 
 
-class TestBooking(MockReponse):
+class TestBooking(Utils):
     def setup_method(self):
         self.data = {"club": "toto", "competition": "Spring Festival", "places": 2}
         self.future_competition = {"club": "toto", "competition": "next competition", "places": 2}
@@ -65,33 +82,52 @@ class TestBooking(MockReponse):
         assert int(context["club"]["points"]) == nombre_point - self.data["places"]
 
     def test_input_is_positive_number(self, client, monkeypatch, captured_templates):
-        self._mock_club_and_competition(monkeypatch)
-        rv = client.post("/purchasePlaces", data=self.data)
-        template, context = captured_templates[0]
+        """
+        Should return a status_code 200 with input > 0.
+        """
+        rv, template, context = self.get_response_value_and_template_context(
+            captured_templates=captured_templates,
+            client=client,
+            method="POST",
+            monkeypatch=monkeypatch,
+            route="/purchasePlaces",
+            data=self.data,
+        )
 
-        # Should return a status_code 200 with input > 0.
         assert rv.status_code == 200
         assert template.name == "welcome.html"
 
     def test_input_is_negative_number(self, client, monkeypatch, captured_templates):
-        self._mock_club_and_competition(monkeypatch)
-        rv = client.post(
-            "/purchasePlaces",
-            data={"club": "Simply Lift", "competition": "Spring Festival", "places": -2},
+        """
+        Should return a status_code 400 with input < 0 and error message.
+        """
+        data_test = {"club": "Simply Lift", "competition": "Spring Festival", "places": -2}
+        rv, template, context = self.get_response_value_and_template_context(
+            captured_templates=captured_templates,
+            client=client,
+            method="POST",
+            monkeypatch=monkeypatch,
+            route="/purchasePlaces",
+            data=data_test,
         )
-        template, context = captured_templates[0]
 
-        # Should return a status_code 400 with input < 0 and error message.
         assert rv.status_code == 400
         assert str(context["error"]) == "Please enter a number greater than zero!"
 
     def test_booking_with_more_than_twelves_places(self, client, monkeypatch, captured_templates):
-        data = {"club": "toto", "competition": "Spring Festival", "places": 13}
-        self._mock_club_and_competition(monkeypatch)
-        rv = client.post("/purchasePlaces", data=data)
-        template, context = captured_templates[0]
+        """
+        Should return a status_code 400 with places > 12 and error message.
+        """
+        data_test = {"club": "toto", "competition": "Spring Festival", "places": 13}
+        rv, template, context = self.get_response_value_and_template_context(
+            captured_templates=captured_templates,
+            client=client,
+            method="POST",
+            monkeypatch=monkeypatch,
+            route="/purchasePlaces",
+            data=data_test,
+        )
 
-        # Should return a status_code 400 with places > 12 and error message.
         assert rv.status_code == 400
         assert str(context["error"]) == "The maximum reservation is 12 places!"
 
@@ -99,35 +135,49 @@ class TestBooking(MockReponse):
         """
         Test should retrun status code 400 with places purchase 7 places) > toto club's points (5 points).
         """
-        data = {"club": "toto", "competition": "Spring Festival", "places": 7}
-        self._mock_club_and_competition(monkeypatch)
-        rv = client.post("/purchasePlaces", data=data)
-        template, context = captured_templates[0]
+        data_test = {"club": "toto", "competition": "Spring Festival", "places": 7}
+        rv, template, context = self.get_response_value_and_template_context(
+            captured_templates=captured_templates,
+            client=client,
+            method="POST",
+            monkeypatch=monkeypatch,
+            route="/purchasePlaces",
+            data=data_test,
+        )
 
         assert rv.status_code == 400
+        assert str(context["error"]) == f"You can book {context['club']['points']} places maximum!"
 
     def test_booking_on_past_competition(self, client, monkeypatch, captured_templates):
-        self._mock_club_and_competition(monkeypatch)
+        """
+        Should return a status_code 400 with date competition < today.
+        """
         route = f"/book/{self.data['competition']}/{self.data['club']}"
-        rv = client.get(route)
-        template, context = captured_templates[0]
+        rv, template, context = self.get_response_value_and_template_context(
+            captured_templates=captured_templates,
+            client=client,
+            method="GET",
+            monkeypatch=monkeypatch,
+            route=route,
+        )
 
-        #  Should return a status_code 400 with date competition < today.
         assert rv.status_code == 400
-
-        # Check template returned
         assert template.name == "welcome.html"
 
     def test_booking_with_future_competition(self, client, monkeypatch, captured_templates):
-        self._mock_club_and_competition(monkeypatch)
+        """
+        Test Should return a status_code 200 with date competition > today.
+        """
         route = f"/book/{self.future_competition['competition']}/{self.future_competition['club']}"
-        rv = client.get(route)
-        template, context = captured_templates[0]
+        rv, template, context = self.get_response_value_and_template_context(
+            captured_templates=captured_templates,
+            client=client,
+            method="GET",
+            monkeypatch=monkeypatch,
+            route=route,
+        )
 
-        #  Should return a status_code 200 with date competition > today.
         assert rv.status_code == 200
-
-        # Check template returned and context.
         assert template.name == "booking.html"
         assert context["club"]["name"] == self.future_competition["club"]
         assert context["competition"]["name"] == self.future_competition["competition"]
