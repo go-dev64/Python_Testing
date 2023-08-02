@@ -77,7 +77,6 @@ class TestBooking(MockReponse):
             "/purchasePlaces",
             data={"club": "Simply Lift", "competition": "Spring Festival", "places": -2},
         )
-
         # Should return a status_code 400 with input < 0 and error rv.data.
         assert rv.status_code == 400
         assert b"error" in rv.data
@@ -86,8 +85,10 @@ class TestBooking(MockReponse):
         data = {"club": "toto", "competition": "Spring Festival", "places": 13}
         self._mock_club_and_competition(monkeypatch)
         rv = client.post("/purchasePlaces", data=data)
+
         # Should return a status_code 400 with places > 12 and error rv.data.
         assert rv.status_code == 400
+        assert b"error" in rv.data
 
     def test_booking_on_past_competition(self, client, monkeypatch, captured_templates):
         self._mock_club_and_competition(monkeypatch)
