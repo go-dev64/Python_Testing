@@ -67,14 +67,14 @@ def purchasePlaces():
         club = [c for c in clubs if c["name"] == request.form["club"]][0]
         placesRequired = int(request.form["places"])
         if placesRequired < 1:
-            raise LowerThanOneError
+            raise LowerThanOneError()
         elif placesRequired > 12:
-            raise MaxPlacesError
-    except LowerThanOneError:
-        error = "Merci d'entrer un chiffre supperieur à zéro!"
+            raise MaxPlacesError()
+    except LowerThanOneError as exc:
+        error = exc
         return render_template("booking.html", club=club, competition=competition, error=error), 400
-    except placesRequired:
-        error = "The maximum reservation is 12 places"
+    except MaxPlacesError as exc:
+        error = exc
         return render_template("booking.html", club=club, competition=competition, error=error), 400
     else:
         club["points"] = int(club["points"]) - placesRequired

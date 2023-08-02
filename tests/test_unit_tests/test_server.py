@@ -64,31 +64,36 @@ class TestBooking(MockReponse):
         assert context["club"]["name"] == self.data["club"]
         assert int(context["club"]["points"]) == nombre_point - self.data["places"]
 
-    def test_input_is_positive_number(self, client, monkeypatch):
+    def test_input_is_positive_number(self, client, monkeypatch, captured_templates):
         self._mock_club_and_competition(monkeypatch)
         rv = client.post("/purchasePlaces", data=self.data)
+        template, context = captured_templates[0]
 
         # Should return a status_code 200 with input > 0.
         assert rv.status_code == 200
+        assert template.name == "welcome.html"
 
-    def test_input_is_negative_number(self, client, monkeypatch):
+    def test_input_is_negative_number(self, client, monkeypatch, captured_templates):
         self._mock_club_and_competition(monkeypatch)
         rv = client.post(
             "/purchasePlaces",
             data={"club": "Simply Lift", "competition": "Spring Festival", "places": -2},
         )
-        # Should return a status_code 400 with input < 0 and error rv.data.
+        template, context = captured_templates[0]
+
+        # Should return a status_code 400 with input < 0 and error message.
         assert rv.status_code == 400
-        assert b"error" in rv.data
+        assert str(context["error"]) == "Please enter a number greater than zero!"
 
     def test_booking_with_more_than_twelves_places(self, client, monkeypatch, captured_templates):
         data = {"club": "toto", "competition": "Spring Festival", "places": 13}
         self._mock_club_and_competition(monkeypatch)
         rv = client.post("/purchasePlaces", data=data)
+        template, context = captured_templates[0]
 
-        # Should return a status_code 400 with places > 12 and error rv.data.
+        # Should return a status_code 400 with places > 12 and error message.
         assert rv.status_code == 400
-        assert b"error" in rv.data
+        assert str(context["error"]) == "The maximum reservation is 12 places!"
 
     def test_booking_on_past_competition(self, client, monkeypatch, captured_templates):
         self._mock_club_and_competition(monkeypatch)
