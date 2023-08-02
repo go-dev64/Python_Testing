@@ -70,12 +70,14 @@ def purchasePlaces():
             raise LowerThanOneError()
         elif placesRequired > 12:
             raise MaxPlacesError()
+
     except LowerThanOneError as exc:
         error = exc
         return render_template("booking.html", club=club, competition=competition, error=error), 400
     except MaxPlacesError as exc:
         error = exc
         return render_template("booking.html", club=club, competition=competition, error=error), 400
+
     else:
         club["points"] = int(club["points"]) - placesRequired
         competition["numberOfPlaces"] = int(competition["numberOfPlaces"]) - placesRequired

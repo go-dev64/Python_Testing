@@ -95,6 +95,17 @@ class TestBooking(MockReponse):
         assert rv.status_code == 400
         assert str(context["error"]) == "The maximum reservation is 12 places!"
 
+    def test_booking_with_purchase_more_than_club_points(self, client, monkeypatch, captured_templates):
+        """
+        Test should retrun status code 400 with places purchase 7 places) > toto club's points (5 points).
+        """
+        data = {"club": "toto", "competition": "Spring Festival", "places": 7}
+        self._mock_club_and_competition(monkeypatch)
+        rv = client.post("/purchasePlaces", data=data)
+        template, context = captured_templates[0]
+
+        assert rv.status_code == 400
+
     def test_booking_on_past_competition(self, client, monkeypatch, captured_templates):
         self._mock_club_and_competition(monkeypatch)
         route = f"/book/{self.data['competition']}/{self.data['club']}"

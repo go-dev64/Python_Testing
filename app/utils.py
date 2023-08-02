@@ -27,3 +27,19 @@ class MaxPlacesError(BaseException):
 
     def __repr__(self) -> str:
         return "The maximum reservation is 12 places!"
+
+
+class ClubPointsExceededError(BaseException):
+    """
+    Exception class for number places booked more than club's points.
+    Return error message.
+    """
+
+    def __init__(self, club_points):
+        self.club_point = club_points
+
+    def __str__(self) -> str:
+        return f"You can book {self.club_point} places maximum!"
+
+    def __repr__(self) -> str:
+        return f"You can book {self.club_point} places maximum!"
