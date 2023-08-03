@@ -130,6 +130,22 @@ class TestBooking(Utils):
         assert rv.status_code == 400
         assert str(context["error"]) == "Please enter a number greater than zero!"
 
+    def test_booking_with_input_is_not_number(self, client, monkeypatch, captured_templates):
+        """
+        Should return a status_code 400 with input != number and error message.
+        """
+        data_test = {"club": "Simply Lift", "competition": "Spring Festival", "places": "aaaaaa"}
+        rv, template, context = self.get_response_value_and_template_context(
+            captured_templates=captured_templates,
+            client=client,
+            method="POST",
+            monkeypatch=monkeypatch,
+            route="/purchasePlaces",
+            data=data_test,
+        )
+
+        assert rv.status_code == 400
+
     def test_booking_with_more_than_twelves_places(self, client, monkeypatch, captured_templates):
         """
         Should return a status_code 400 with places > 12 and error message.
