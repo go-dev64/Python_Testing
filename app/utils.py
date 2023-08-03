@@ -16,30 +16,35 @@ class LowerThanOneError(BaseException):
         return "Please enter a number greater than zero!"
 
 
-class MaxPlacesError(BaseException):
-    """
-    Exception class for more than 12 places reserved.
-    Return error message.
-    """
+class PlacesError(BaseException):
+    def __init__(self, nombre_max_places, type_error=None):
+        """
+        Exception class for error number places.
+        Return error message.
 
-    def __str__(self) -> str:
+        Args:
+            nombre_max_places (_type_: int): number of places available for reservation.
+            type_error (_type_: str, optional): str describe error. Defaults to None.
+        """
+        self.nombre_max_places = nombre_max_places
+        self.type_error = type_error
+
+    def error_reservation_more_than_twelves_places(self) -> str:
+        # Error message for booking more than twelves places.
         return "The maximum reservation is 12 places!"
 
-    def __repr__(self) -> str:
-        return "The maximum reservation is 12 places!"
-
-
-class ClubPointsExceededError(BaseException):
-    """
-    Exception class for number places booked more than club's points.
-    Return error message.
-    """
-
-    def __init__(self, club_points):
-        self.club_point = club_points
+    def error_max_places(self) -> str:
+        # Error message for booking more places than available.
+        return f"You can book {self.nombre_max_places} places maximum!"
 
     def __str__(self) -> str:
-        return f"You can book {self.club_point} places maximum!"
+        if self.type_error != None:
+            return self.error_max_places()
+        else:
+            return self.error_reservation_more_than_twelves_places()
 
     def __repr__(self) -> str:
-        return f"You can book {self.club_point} places maximum!"
+        if self.type_error == "error_max_places":
+            return self.error_max_places()
+        else:
+            return self.error_reservation_more_than_twelves_places()

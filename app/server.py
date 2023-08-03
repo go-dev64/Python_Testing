@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, flash, url_for
-from app.utils import ClubPointsExceededError, LowerThanOneError, MaxPlacesError
+from app.utils import LowerThanOneError, PlacesError
 
 bp = Blueprint("server", __name__)
 
@@ -69,21 +69,17 @@ def purchasePlaces():
         if placesRequired < 1:
             raise LowerThanOneError()
         elif placesRequired > 12:
-            raise MaxPlacesError()
+            raise PlacesError(nombre_max_places=12)
         elif placesRequired > int(club["points"]):
-            raise ClubPointsExceededError(int(club["points"]))
+            raise PlacesError(int(club["points"]), type_error="error_max_places")
         elif placesRequired > int(competition["numberOfPlaces"]):
-            raise MaxPlacesError()
+            raise PlacesError(int(competition["numberOfPlaces"]), type_error="error_max_places")
 
     except LowerThanOneError as exc:
         error = exc
         return render_template("booking.html", club=club, competition=competition, error=error), 400
 
-    except MaxPlacesError as exc:
-        error = exc
-        return render_template("booking.html", club=club, competition=competition, error=error), 400
-
-    except ClubPointsExceededError as exc:
+    except PlacesError as exc:
         error = exc
         return render_template("booking.html", club=club, competition=competition, error=error), 400
 
