@@ -58,12 +58,12 @@ class TestEmail(Utils):
         assert context["club"]["email"] == self.email
         assert len(context["list_of_clubs"]) > 0
 
-    def test_home_page(self, client, monkeypatch, captured_templates):
+    def test_dashboard(self, client, monkeypatch, captured_templates):
         """
         Test should return clubs list on page home.
         """
         data_test = {"club": "toto"}
-        route = f"/home/{data_test['club']}"
+        route = f"/dashboard/{data_test['club']}"
         rv, template, context = self.get_response_value_and_template_context(
             captured_templates=captured_templates,
             client=client,
@@ -72,7 +72,7 @@ class TestEmail(Utils):
             route=route,
         )
         assert rv.status_code == 200
-        assert template.name == "home.html"
+        assert template.name == "dashboard.html"
         assert len(context["list_of_clubs"]) > 0
 
 

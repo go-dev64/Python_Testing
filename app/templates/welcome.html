@@ -31,8 +31,7 @@
         {% endfor %}
     </ul>
     <h3>Dashboard Club/Points</h3>
-    <a href="{{ url_for('server.home', club=club['name'])}}">List of club</a>
+    <a href="{{ url_for('server.dashboard', club=club['name'])}}">List of club</a>
     {%endwith%}
-
 </body>
 </html>

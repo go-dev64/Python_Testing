@@ -92,11 +92,11 @@ def purchasePlaces():
         return render_template("welcome.html", club=club, competitions=competitions)
 
 
-@bp.route("/home/<club>")
-def home(club):
+@bp.route("/dashboard/<club>")
+def dashboard(club):
     foundClub = [c for c in clubs if c["name"] == club][0]
     if foundClub:
-        return render_template("home.html", club=foundClub, list_of_clubs=clubs)
+        return render_template("dashboard.html", club=foundClub, list_of_clubs=clubs)
     else:
         flash("Something went wrong-please try again")
         return render_template("welcome.html", club=club, competitions=competitions)
