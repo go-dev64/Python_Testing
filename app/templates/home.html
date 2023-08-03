@@ -1,0 +1,34 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | GUDLFT </title>
+</head>
+<body>
+        <h2>Welcome, {{club['email']}} </h2><a href="{{url_for('server.logout')}}">Logout</a>
+
+    {% with messages = get_flashed_messages()%}
+    {% if messages %}
+        <ul>
+       {% for message in messages %}
+            <li>{{message}}</li>
+        {% endfor %}
+       </ul>
+    {% endif%}
+    Points available: {{club['points']}}
+    <h3>List of Club:</h3>
+    <ul>
+        {% for sport_club in list_of_clubs %}
+            {% if sport_club != club %}
+            <li>
+                <strong> {{ sport_club['name'] }} </strong><br>
+                Email: <strong>{{ sport_club['email']}} </strong> <br>
+                Number of points: <strong>{{sport_club['points']}} </strong>
+            </li>
+            <hr />
+            {% endif %}
+        {% endfor %}
+    </ul>
+    {%endwith%}
+</body>
+</html>
