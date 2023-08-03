@@ -72,6 +72,8 @@ def purchasePlaces():
             raise MaxPlacesError()
         elif placesRequired > int(club["points"]):
             raise ClubPointsExceededError(int(club["points"]))
+        elif placesRequired > int(competition["numberOfPlaces"]):
+            raise MaxPlacesError()
 
     except LowerThanOneError as exc:
         error = exc
