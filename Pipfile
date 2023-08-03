@@ -16,6 +16,7 @@ selenium = "*"
 pytest-flask = "*"
 locust = "*"
 pytest-mock = "*"
+pytest-cov = "*"
 
 [dev-packages]
 
