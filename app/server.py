@@ -1,5 +1,7 @@
 import json
+from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, flash, url_for
+from app.utils import ClubPointsExceededError, LowerThanOneError, MaxPlacesError
 
 bp = Blueprint("server", __name__)
 
@@ -39,23 +41,55 @@ def showSummary():
 
 @bp.route("/book/<competition>/<club>")
 def book(competition, club):
-    foundClub = [c for c in clubs if c["name"] == club][0]
-    foundCompetition = [c for c in competitions if c["name"] == competition][0]
-    if foundClub and foundCompetition:
-        return render_template("booking.html", club=foundClub, competition=foundCompetition)
+    error = None
+    try:
+        foundClub = [c for c in clubs if c["name"] == club][0]
+        foundCompetition = [c for c in competitions if c["name"] == competition][0]
+        today = datetime.today().timestamp()
+        date_of_competition = datetime.strptime(foundCompetition["date"], "%Y-%m-%d %H:%M:%S").timestamp()
+        assert date_of_competition > today
+    except:
+        flash("Error: Booking impossible, competiton already finished!")
+        return render_template("welcome.html", club=foundClub, competitions=competitions, list_of_clubs=clubs), 400
     else:
-        flash("Something went wrong-please try again")
-        return render_template("welcome.html", club=club, competitions=competitions)
+        if foundClub and foundCompetition:
+            return render_template("booking.html", club=foundClub, competition=foundCompetition)
+        else:
+            flash("Error: Something went wrong-please try again")
+            return render_template("welcome.html", club=club, competitions=competitions, list_of_clubs=clubs)
 
 
 @bp.route("/purchasePlaces", methods=["POST"])
 def purchasePlaces():
-    competition = [c for c in competitions if c["name"] == request.form["competition"]][0]
-    club = [c for c in clubs if c["name"] == request.form["club"]][0]
-    placesRequired = int(request.form["places"])
-    competition["numberOfPlaces"] = int(competition["numberOfPlaces"]) - placesRequired
-    flash("Great-booking complete!")
-    return render_template("welcome.html", club=club, competitions=competitions)
+    error = None
+    try:
+        competition = [c for c in competitions if c["name"] == request.form["competition"]][0]
+        club = [c for c in clubs if c["name"] == request.form["club"]][0]
+        placesRequired = int(request.form["places"])
+        if placesRequired < 1:
+            raise LowerThanOneError()
+        elif placesRequired > 12:
+            raise MaxPlacesError()
+        elif placesRequired > int(club["points"]):
+            raise ClubPointsExceededError(int(club["points"]))
+
+    except LowerThanOneError as exc:
+        error = exc
+        return render_template("booking.html", club=club, competition=competition, error=error), 400
+
+    except MaxPlacesError as exc:
+        error = exc
+        return render_template("booking.html", club=club, competition=competition, error=error), 400
+
+    except ClubPointsExceededError as exc:
+        error = exc
+        return render_template("booking.html", club=club, competition=competition, error=error), 400
+
+    else:
+        club["points"] = int(club["points"]) - placesRequired
+        competition["numberOfPlaces"] = int(competition["numberOfPlaces"]) - placesRequired
+        flash("Great-booking complete!")
+        return render_template("welcome.html", club=club, competitions=competitions)
 
 
 @bp.route("/home/<club>")
