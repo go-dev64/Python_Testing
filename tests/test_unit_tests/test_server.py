@@ -164,6 +164,22 @@ class TestBooking(Utils):
         assert rv.status_code == 400
         assert str(context["error"]) == f"You can book {context['club']['points']} places maximum!"
 
+    def test_booking_with_more_places_than_available(self, client, monkeypatch, captured_templates):
+        """
+        Test should return status code 400 with number places purchease > available places.
+        """
+        data_test = {"club": "tata", "competition": "Spring Festival", "places": 50}
+        rv, template, context = self.get_response_value_and_template_context(
+            captured_templates=captured_templates,
+            client=client,
+            method="POST",
+            monkeypatch=monkeypatch,
+            route="/purchasePlaces",
+            data=data_test,
+        )
+        assert rv.status_code == 400
+        assert str(context["error"]) == f"You can book {context['club']['points']} places maximum!"
+
     def test_booking_on_past_competition(self, client, monkeypatch, captured_templates):
         """
         Should return a status_code 400 with date competition < today.

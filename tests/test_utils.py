@@ -19,6 +19,7 @@ class MockReponse:
             {"name": "Iron Temple", "email": "admin@irontemple.com", "points": "4"},
             {"name": "She Lifts", "email": "kate@shelifts.co.uk", "points": "12"},
             {"name": "toto", "email": "toto@mail.fr", "points": "5"},
+            {"name": "tata", "email": "toto@mail.fr", "points": "500"},
         ]
 
     @staticmethod
