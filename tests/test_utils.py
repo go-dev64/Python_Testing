@@ -28,7 +28,7 @@ class MockReponse:
         return [
             {"name": "Spring Festival", "date": "2020-03-27 10:00:00", "numberOfPlaces": "25"},
             {"name": "Fall Classic", "date": "2020-10-22 13:30:00", "numberOfPlaces": "13"},
-            {"name": "next competition", "date": "2025-10-22 13:30:00", "numberOfPlaces": "13"},
+            {"name": "next competition", "date": "2025-10-22 13:30:00", "numberOfPlaces": "2"},
         ]
 
     def _mock_club_and_competition(self, monkeypatch):

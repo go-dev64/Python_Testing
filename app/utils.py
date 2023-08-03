@@ -33,18 +33,24 @@ class PlacesError(BaseException):
         # Error message for booking more than twelves places.
         return "The maximum reservation is 12 places!"
 
-    def error_max_places(self) -> str:
-        # Error message for booking more places than available.
+    def error_club_points(self) -> str:
+        # Error message for booking more places than club points.
         return f"You can book {self.nombre_max_places} places maximum!"
 
+    def error_places_available(self):
+        # Error message for booking more places than club points.
+        return f"There are only {self.nombre_max_places} places available!"
+
     def __str__(self) -> str:
-        if self.type_error != None:
-            return self.error_max_places()
+        if self.type_error == "error club points":
+            return self.error_club_points()
+        elif self.type_error == "error_places_available":
+            return self.error_places_available()
         else:
             return self.error_reservation_more_than_twelves_places()
 
     def __repr__(self) -> str:
-        if self.type_error == "error_max_places":
+        if self.type_error != None:
             return self.error_max_places()
         else:
             return self.error_reservation_more_than_twelves_places()
