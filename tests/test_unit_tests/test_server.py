@@ -63,7 +63,7 @@ class TestEmail(Utils):
         Test should return clubs list on page home.
         """
         data_test = {"club": "toto"}
-        route = f"/home/{self.data['club']}"
+        route = f"/home/{data_test['club']}"
         rv, template, context = self.get_response_value_and_template_context(
             captured_templates=captured_templates,
             client=client,
@@ -71,7 +71,7 @@ class TestEmail(Utils):
             monkeypatch=monkeypatch,
             route=route,
         )
-        assert rv.status.code == 200
+        assert rv.status_code == 200
         assert template.name == "home.html"
         assert len(context["list_of_clubs"]) > 0
 

@@ -96,7 +96,7 @@ def purchasePlaces():
 def home(club):
     foundClub = [c for c in clubs if c["name"] == club][0]
     if foundClub:
-        return render_template("booking.html", club=foundClub, list_of_clubs=clubs)
+        return render_template("home.html", club=foundClub, list_of_clubs=clubs)
     else:
         flash("Something went wrong-please try again")
         return render_template("welcome.html", club=club, competitions=competitions)

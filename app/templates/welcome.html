@@ -30,19 +30,8 @@
         <hr />
         {% endfor %}
     </ul>
-    <h3>List of Club</h3>
-    <ul>
-        {% for sport_club in list_of_clubs %}
-            {% if sport_club != club %}
-            <li>
-                <strong> {{ sport_club['name'] }} </strong><br>
-                Email: <strong>{{ sport_club['email']}} </strong> <br>
-                Number of points: <strong>{{sport_club['points']}} </strong>
-            </li>
-            <hr />
-            {% endif %}
-        {% endfor %}
-    </ul>
+    <h3>Dashboard Club/Points</h3>
+    <a href="{{ url_for('server.home', club=club['name'])}}">List of club</a>
     {%endwith%}
 
 </body>
