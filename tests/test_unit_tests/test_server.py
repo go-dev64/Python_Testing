@@ -145,6 +145,7 @@ class TestBooking(Utils):
         )
 
         assert rv.status_code == 400
+        assert str(context["error"]) == "Please, Enter a number!"
 
     def test_booking_with_more_than_twelves_places(self, client, monkeypatch, captured_templates):
         """

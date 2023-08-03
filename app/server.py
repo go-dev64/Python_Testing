@@ -83,6 +83,10 @@ def purchasePlaces():
         error = exc
         return render_template("booking.html", club=club, competition=competition, error=error), 400
 
+    except ValueError:
+        error = "Please, Enter a number!"
+        return render_template("booking.html", club=club, competition=competition, error=error), 400
+
     else:
         club["points"] = int(club["points"]) - placesRequired
         competition["numberOfPlaces"] = int(competition["numberOfPlaces"]) - placesRequired
