@@ -185,7 +185,7 @@ class TestBooking(Utils):
         """
         Test should return status code 400 with number places purchease > available places.
         """
-        data_test = {"club": "tata", "competition": "Spring Festival", "places": 50}
+        data_test = {"club": "tata", "competition": "next competition", "places": 3}
         rv, template, context = self.get_response_value_and_template_context(
             captured_templates=captured_templates,
             client=client,
@@ -195,7 +195,7 @@ class TestBooking(Utils):
             data=data_test,
         )
         assert rv.status_code == 400
-        # assert str(context["error"]) ==
+        assert str(context["error"]) == f"There are only {context['competition']['numberOfPlaces']} places available!"
 
     def test_booking_on_past_competition(self, client, monkeypatch, captured_templates):
         """
