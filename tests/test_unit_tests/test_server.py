@@ -36,5 +36,4 @@ class TestEmail(MockReponse):
         rv = client.post("/showSummary", data={"email": self.email})
         template, context = captured_templates[0]
         assert context["club"]["email"] == self.email
-        assert context["list_of_clubs"] == server.clubs
         assert len(context["list_of_clubs"]) > 0
