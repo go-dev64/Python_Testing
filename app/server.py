@@ -58,7 +58,14 @@ def purchasePlaces():
     return render_template("welcome.html", club=club, competitions=competitions)
 
 
-# TODO: Add route for points display
+@bp.route("/home/<club>")
+def home(club):
+    foundClub = [c for c in clubs if c["name"] == club][0]
+    if foundClub:
+        return render_template("booking.html", club=foundClub, list_of_clubs=clubs)
+    else:
+        flash("Something went wrong-please try again")
+        return render_template("welcome.html", club=club, competitions=competitions)
 
 
 @bp.route("/logout")
