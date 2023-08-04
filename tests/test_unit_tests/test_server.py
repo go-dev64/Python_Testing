@@ -185,9 +185,28 @@ class TestBooking(Utils):
             route="/purchasePlaces",
             data=data_test,
         )
-        print(context)
         assert rv.status_code == 400
         assert str(context["error"]) == "The maximum reservation is 12 places!"
+
+    def test_add_competition_booked(self, client, monkeypatch, captured_templates):
+        data_test = {"club": "club_with_competition_booked", "competition": "Spring Festival", "places": 2}
+        self._mock_club_and_competition(monkeypatch)
+        # We get club point before request.
+        club = [c for c in server.clubs if c["name"] == data_test["club"]][0]
+        competition_booked = [c for c in club["competitions_booked"] if c["name"] == data_test["competition"]][0]
+        number_places_booked_in_competition = competition_booked["numbers_places_booked"]
+
+        rv = client.post("/purchasePlaces", data=data_test)
+        assert rv.status_code == 200
+        template, context = captured_templates[0]
+        # Checking of deduction of points and  the context returned are those of the requested club.
+
+        competition_booked_after = [c for c in club["competitions_booked"] if c["name"] == data_test["competition"]][0]
+        assert context["club"]["name"] == data_test["club"]
+        assert (
+            competition_booked_after["numbers_places_booked"]
+            == number_places_booked_in_competition + self.data["places"]
+        )
 
     def test_booking_with_purchase_more_than_club_points(self, client, monkeypatch, captured_templates):
         """
