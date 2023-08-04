@@ -12,9 +12,6 @@ class LowerThanOneError(BaseException):
     def __str__(self) -> str:
         return "Please enter a number greater than zero!"
 
-    def __repr__(self) -> str:
-        return "Please enter a number greater than zero!"
-
 
 class PlacesError(BaseException):
     def __init__(self, nombre_max_places, type_error=None):
@@ -46,11 +43,5 @@ class PlacesError(BaseException):
             return self.error_club_points()
         elif self.type_error == "error_places_available":
             return self.error_places_available()
-        else:
-            return self.error_reservation_more_than_twelves_places()
-
-    def __repr__(self) -> str:
-        if self.type_error != None:
-            return self.error_max_places()
         else:
             return self.error_reservation_more_than_twelves_places()
