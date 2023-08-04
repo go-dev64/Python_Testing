@@ -68,12 +68,23 @@ def purchasePlaces():
         placesRequired = int(request.form["places"])
         if placesRequired < 1:
             raise LowerThanOneError()
+
         elif placesRequired > 12:
             raise PlacesError(nombre_max_places=12)
+
         elif placesRequired > int(club["points"]):
             raise PlacesError(int(club["points"]), type_error="error club points")
+
         elif placesRequired > int(competition["numberOfPlaces"]):
             raise PlacesError(int(competition["numberOfPlaces"]), type_error="error_places_available")
+
+        elif "competitions_booked" in club:
+            competition_booked = [c for c in club["competitions_booked"] if c["name"] == competition["name"]]
+            if len(competition_booked) == 1:
+                nomber_places_booked = int(competition_booked[0]["numbers_places_booked"])
+                total_order = nomber_places_booked + placesRequired
+                if total_order > 12:
+                    raise PlacesError(nombre_max_places=12)
 
     except LowerThanOneError as exc:
         error = exc

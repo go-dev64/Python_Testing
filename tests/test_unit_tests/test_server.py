@@ -174,9 +174,9 @@ class TestBooking(Utils):
 
     def test_several_orders_with_more_than_twelves_places_in_total(self, client, monkeypatch, captured_templates):
         """
-        Should return a status_code 400 with places > 12 and error message.
+        Should return a status_code 400 with places oSrdered > 12 and error message.
         """
-        data_test = {"club": "toto", "competition": "Spring Festival", "places": 7}
+        data_test = {"club": "club_with_competition_booked", "competition": "Spring Festival", "places": 7}
         rv, template, context = self.get_response_value_and_template_context(
             captured_templates=captured_templates,
             client=client,
@@ -185,21 +185,13 @@ class TestBooking(Utils):
             route="/purchasePlaces",
             data=data_test,
         )
-        assert rv.status_code == 200
-        data_test = {"club": "toto", "competition": "Spring Festival", "places": 7}
-        rv, template, context = self.get_response_value_and_template_context(
-            captured_templates=captured_templates,
-            client=client,
-            method="POST",
-            monkeypatch=monkeypatch,
-            route="/purchasePlaces",
-            data=data_test,
-        )
+        print(context)
         assert rv.status_code == 400
+        assert str(context["error"]) == "The maximum reservation is 12 places!"
 
     def test_booking_with_purchase_more_than_club_points(self, client, monkeypatch, captured_templates):
         """
-        Test should retrun status code 400 with places purchase 7 places) > toto club's points (5 points).
+        Test should retrun status code 400 with places purchase 7 places > toto club's points (5 points).
         """
         data_test = {"club": "toto", "competition": "Spring Festival", "places": 7}
         rv, template, context = self.get_response_value_and_template_context(
