@@ -1,4 +1,5 @@
 import pytest
+from flask import url_for, request
 from app import server
 from tests.test_utils import Utils
 
@@ -74,6 +75,13 @@ class TestEmail(Utils):
         assert rv.status_code == 200
         assert template.name == "dashboard.html"
         assert len(context["list_of_clubs"]) > 0
+
+    def test_redirect_index_page(self, client, monkeypatch, captured_templates):
+        self._mock_club_and_competition(monkeypatch)
+        rv = client.get("/logout")
+
+        rv.status_code == 302
+        assert request.path == url_for("index")
 
 
 class TestBooking(Utils):
