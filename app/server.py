@@ -99,7 +99,14 @@ def purchasePlaces():
         return render_template("booking.html", club=club, competition=competition, error=error), 400
 
     else:
+        if "competitions_booked" not in club:
+            club["competitions_booked"] = []
+            club["competitions_booked"].append({"name": competition["name"], "numbers_places_booked": 0})
+        if competition["name"] not in club["competitions_booked"]:
+            club["competitions_booked"].append({"name": competition["name"], "numbers_places_booked": 0})
         club["points"] = int(club["points"]) - placesRequired
+        update_competition_booked = [c for c in club["competitions_booked"] if c["name"] == competition["name"]][0]
+        update_competition_booked["numbers_places_booked"] += placesRequired
         competition["numberOfPlaces"] = int(competition["numberOfPlaces"]) - placesRequired
         flash("Great-booking complete!")
         return render_template("welcome.html", club=club, competitions=competitions)

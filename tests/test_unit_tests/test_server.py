@@ -188,7 +188,7 @@ class TestBooking(Utils):
         assert rv.status_code == 400
         assert str(context["error"]) == "The maximum reservation is 12 places!"
 
-    def test_add_competition_booked(self, client, monkeypatch, captured_templates):
+    def test_update_umbers_places_booked(self, client, monkeypatch, captured_templates):
         data_test = {"club": "club_with_competition_booked", "competition": "Spring Festival", "places": 2}
         self._mock_club_and_competition(monkeypatch)
         # We get club point before request.
@@ -205,8 +205,9 @@ class TestBooking(Utils):
         assert context["club"]["name"] == data_test["club"]
         assert (
             competition_booked_after["numbers_places_booked"]
-            == number_places_booked_in_competition + self.data["places"]
+            == number_places_booked_in_competition + data_test["places"]
         )
+        print(context)
 
     def test_booking_with_purchase_more_than_club_points(self, client, monkeypatch, captured_templates):
         """
