@@ -59,6 +59,28 @@ def book(competition, club):
             return render_template("welcome.html", club=club, competitions=competitions, list_of_clubs=clubs)
 
 
+def toto(placesRequired, club, competition):
+    if placesRequired < 1:
+        raise LowerThanOneError()
+
+    elif placesRequired > 12:
+        raise PlacesError(nombre_max_places=12)
+
+    elif placesRequired > int(club["points"]):
+        raise PlacesError(int(club["points"]), type_error="error club points")
+
+    elif placesRequired > int(competition["numberOfPlaces"]):
+        raise PlacesError(int(competition["numberOfPlaces"]), type_error="error_places_available")
+
+    elif "competitions_booked" in club:
+        competition_booked = [c for c in club["competitions_booked"] if c["name"] == competition["name"]]
+        if len(competition_booked) == 1:
+            nomber_places_booked = int(competition_booked[0]["numbers_places_booked"])
+            total_order = nomber_places_booked + placesRequired
+            if total_order > 12:
+                raise PlacesError(nombre_max_places=12)
+
+
 @bp.route("/purchasePlaces", methods=["POST"])
 def purchasePlaces():
     error = None
@@ -66,25 +88,7 @@ def purchasePlaces():
         competition = [c for c in competitions if c["name"] == request.form["competition"]][0]
         club = [c for c in clubs if c["name"] == request.form["club"]][0]
         placesRequired = int(request.form["places"])
-        if placesRequired < 1:
-            raise LowerThanOneError()
-
-        elif placesRequired > 12:
-            raise PlacesError(nombre_max_places=12)
-
-        elif placesRequired > int(club["points"]):
-            raise PlacesError(int(club["points"]), type_error="error club points")
-
-        elif placesRequired > int(competition["numberOfPlaces"]):
-            raise PlacesError(int(competition["numberOfPlaces"]), type_error="error_places_available")
-
-        elif "competitions_booked" in club:
-            competition_booked = [c for c in club["competitions_booked"] if c["name"] == competition["name"]]
-            if len(competition_booked) == 1:
-                nomber_places_booked = int(competition_booked[0]["numbers_places_booked"])
-                total_order = nomber_places_booked + placesRequired
-                if total_order > 12:
-                    raise PlacesError(nombre_max_places=12)
+        toto(placesRequired, club, competition)
 
     except LowerThanOneError as exc:
         error = exc
