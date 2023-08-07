@@ -59,7 +59,22 @@ def book(competition, club):
             return render_template("welcome.html", club=club, competitions=competitions, list_of_clubs=clubs)
 
 
-def toto(placesRequired, club, competition):
+def purchase_conditions(placesRequired, club, competition):
+    """
+    Defines the conditions for ordering competitions places and raise exceptions if conditions is not respected.
+
+    Args:
+        club (_type_): Club that reserves places of a competition.
+        competition (_type_): Competition booked.
+        placesRequired (_type_): Number of places ordered.
+
+    Raises:
+        LowerThanOneError: Exception for a order with fewer places than 1.
+        PlacesError: _description_
+        PlacesError: _description_
+        PlacesError: _description_
+        PlacesError: _description_
+    """
     if placesRequired < 1:
         raise LowerThanOneError()
 
@@ -88,7 +103,7 @@ def purchasePlaces():
         competition = [c for c in competitions if c["name"] == request.form["competition"]][0]
         club = [c for c in clubs if c["name"] == request.form["club"]][0]
         placesRequired = int(request.form["places"])
-        toto(placesRequired, club, competition)
+        purchase_conditions(placesRequired, club, competition)
 
     except LowerThanOneError as exc:
         error = exc
