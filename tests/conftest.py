@@ -22,11 +22,6 @@ def client(app):
 
 
 @pytest.fixture
-def runner(app):
-    return app.test_cli_runner()
-
-
-@pytest.fixture
 def captured_templates(app):
     recorded = []
 

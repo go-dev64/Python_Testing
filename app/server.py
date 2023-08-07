@@ -102,6 +102,8 @@ def update_competition_booked_by_the_club(placesRequired, club, competition):
         club["competitions_booked"].append({"name": competition["name"], "numbers_places_booked": 0})
     if competition["name"] not in club["competitions_booked"]:
         club["competitions_booked"].append({"name": competition["name"], "numbers_places_booked": 0})
+    update_competition_booked = [c for c in club["competitions_booked"] if c["name"] == competition["name"]][0]
+    update_competition_booked["numbers_places_booked"] += placesRequired
 
 
 @bp.route("/purchasePlaces", methods=["POST"])
@@ -128,8 +130,6 @@ def purchasePlaces():
     else:
         update_competition_booked_by_the_club(club=club, competition=competition, placesRequired=placesRequired)
         club["points"] = int(club["points"]) - placesRequired
-        update_competition_booked = [c for c in club["competitions_booked"] if c["name"] == competition["name"]][0]
-        update_competition_booked["numbers_places_booked"] += placesRequired
         competition["numberOfPlaces"] = int(competition["numberOfPlaces"]) - placesRequired
         flash("Great-booking complete!")
         return render_template("welcome.html", club=club, competitions=competitions)
