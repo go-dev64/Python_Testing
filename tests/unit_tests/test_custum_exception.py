@@ -1,4 +1,4 @@
-from app.custom_exception import LowerThanOneError, PlacesError
+from app.custom_exception import LowerThanOneError, PastCompetitionError, PlacesError
 
 
 class TestException:
@@ -19,3 +19,7 @@ class TestException:
     def test_error_places_available(self):
         test = PlacesError(nombre_max_places=5, type_error="error_places_available")
         assert test.__str__() == f"There are only 5 places available!"
+
+    def test_past_competition_error(self):
+        test = PastCompetitionError()
+        assert test.__str__() == "Error: Booking impossible, competiton already finished!"

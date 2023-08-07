@@ -239,6 +239,38 @@ class TestBooking(Utils):
         assert rv.status_code == 400
         assert template.name == "welcome.html"
 
+    def test_book_with_unknown_club(self, client, monkeypatch, captured_templates):
+        data_test = {"club": "bad_club", "competition": "Spring Festival"}
+        self._mock_club_and_competition(monkeypatch)
+        route = f"/book/{data_test['competition']}/{data_test['club']}"
+        rv, template, context = self.get_response_value_and_template_context(
+            captured_templates=captured_templates,
+            client=client,
+            method="GET",
+            monkeypatch=monkeypatch,
+            route=route,
+        )
+
+        assert rv.status_code == 400
+        assert template.name == "welcome.html"
+        assert b"Error: Something went wrong-please try again" in rv.data
+
+    def test_book_with_unknown_competition(self, client, monkeypatch, captured_templates):
+        data_test = {"club": "toto", "competition": "bad competition"}
+        self._mock_club_and_competition(monkeypatch)
+        route = f"/book/{data_test['competition']}/{data_test['club']}"
+        rv, template, context = self.get_response_value_and_template_context(
+            captured_templates=captured_templates,
+            client=client,
+            method="GET",
+            monkeypatch=monkeypatch,
+            route=route,
+        )
+
+        assert rv.status_code == 400
+        assert template.name == "welcome.html"
+        assert b"Error: Something went wrong-please try again" in rv.data
+
     def test_booking_with_future_competition(self, client, monkeypatch, captured_templates):
         """
         Test Should return a status_code 200 with date competition > today.

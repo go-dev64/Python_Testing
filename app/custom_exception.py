@@ -45,3 +45,13 @@ class PlacesError(BaseException):
             return self.error_places_available()
         else:
             return self.error_reservation_more_than_twelves_places()
+
+
+class PastCompetitionError(BaseException):
+    """
+    Exception class for completed competitions.
+    Return error message.
+    """
+
+    def __str__(self) -> str:
+        return "Error: Booking impossible, competiton already finished!"

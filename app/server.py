@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, flash, url_for
-from app.custom_exception import LowerThanOneError, PlacesError
+from app.custom_exception import LowerThanOneError, PastCompetitionError, PlacesError
 from app.utils import find_element, purchase_conditions, update_competition_booked_by_the_club
 
 bp = Blueprint("server", __name__)
@@ -48,16 +48,16 @@ def book(competition, club):
         foundCompetition = find_element(competitions, competition)
         today = datetime.today().timestamp()
         date_of_competition = datetime.strptime(foundCompetition["date"], "%Y-%m-%d %H:%M:%S").timestamp()
-        assert date_of_competition > today
-    except:
-        flash("Error: Booking impossible, competiton already finished!")
+        if date_of_competition < today:
+            raise PastCompetitionError()
+    except PastCompetitionError as msg:
+        flash(msg)
         return render_template("welcome.html", club=foundClub, competitions=competitions, list_of_clubs=clubs), 400
+    except:
+        flash("Error: Something went wrong-please try again")
+        return render_template("welcome.html", club=club, competitions=competitions, list_of_clubs=clubs), 400
     else:
-        if foundClub and foundCompetition:
-            return render_template("booking.html", club=foundClub, competition=foundCompetition)
-        else:
-            flash("Error: Something went wrong-please try again")
-            return render_template("welcome.html", club=club, competitions=competitions, list_of_clubs=clubs)
+        return render_template("booking.html", club=foundClub, competition=foundCompetition)
 
 
 @bp.route("/purchasePlaces", methods=["POST"])
