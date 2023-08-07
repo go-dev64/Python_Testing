@@ -15,6 +15,22 @@ class TestUtils(Utils):
         assert club_returned["name"] == club_name
         assert club_returned["email"] == data_test["email"]
 
+    def test_update_numbers_places_booked(self, monkeypatch):
+        """
+        The test must add the places ordered by the competition's key: numbers_places_booked to the club's:competitions_booked list.
+
+        Args:
+            monkeypatch (_type_): _description_
+        """
+        self._mock_club_and_competition(monkeypatch)
+        club = [c for c in server.clubs if c["name"] == "club_with_competition_booked"][0]
+        competition = [c for c in server.competitions if c["name"] == "Spring Festival"][0]
+        places_ordered = 2
+        excepted_result = 9
+        server.update_competition_booked_by_the_club(club=club, competition=competition, placesRequired=places_ordered)
+        competition_booked = [c for c in club["competitions_booked"] if c["name"] == "Spring Festival"][0]
+        assert competition_booked["numbers_places_booked"] == excepted_result
+
     def _raise_exception(self, club_name, competition_name, placesRequired, type_exception, monkeypatch):
         self._mock_club_and_competition(monkeypatch)
         club = [c for c in server.clubs if c["name"] == club_name][0]
