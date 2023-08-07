@@ -1,6 +1,5 @@
 import pytest
 from app import server
-from tests.conftest import captured_templates
 
 
 class MockReponse:
