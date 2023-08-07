@@ -1,6 +1,7 @@
 import pytest
 from flask import url_for, request
-from app import server
+from app import server, utils
+
 from tests.test_utils import Utils
 
 
@@ -188,26 +189,6 @@ class TestBooking(Utils):
         assert rv.status_code == 400
         assert str(context["error"]) == "The maximum reservation is 12 places!"
 
-    """def test_update_numbers_places_booked(self, client, monkeypatch, captured_templates):
-        data_test = {"club": "club_with_competition_booked", "competition": "Spring Festival", "places": 2}
-        self._mock_club_and_competition(monkeypatch)
-        # We get club point before request.
-        club = [c for c in server.clubs if c["name"] == data_test["club"]][0]
-        competition_booked = [c for c in club["competitions_booked"] if c["name"] == data_test["competition"]][0]
-        number_places_booked_in_competition = competition_booked["numbers_places_booked"]
-
-        rv = client.post("/purchasePlaces", data=data_test)
-        assert rv.status_code == 200
-        template, context = captured_templates[0]
-        # Checking of deduction of points and  the context returned are those of the requested club.
-
-        competition_booked_after = [c for c in club["competitions_booked"] if c["name"] == data_test["competition"]][0]
-        assert context["club"]["name"] == data_test["club"]
-        assert (
-            competition_booked_after["numbers_places_booked"]
-            == number_places_booked_in_competition + data_test["places"]
-        )"""
-
     def test_update_numbers_places_booked(self, monkeypatch):
         """
         The test must add the places ordered by the competition's key: numbers_places_booked to the club's:competitions_booked list.
@@ -219,10 +200,52 @@ class TestBooking(Utils):
         club = [c for c in server.clubs if c["name"] == "club_with_competition_booked"][0]
         competition = [c for c in server.competitions if c["name"] == "Spring Festival"][0]
         places_ordered = 2
-        result_excepted = 9
+        excepted_result = 9
         server.update_competition_booked_by_the_club(club=club, competition=competition, placesRequired=places_ordered)
         competition_booked = [c for c in club["competitions_booked"] if c["name"] == "Spring Festival"][0]
-        assert competition_booked["numbers_places_booked"] == result_excepted
+        assert competition_booked["numbers_places_booked"] == excepted_result
+
+    def _raise_exception(self, club_name, competition_name, placesRequired, type_exception, monkeypatch):
+        self._mock_club_and_competition(monkeypatch)
+        club = [c for c in server.clubs if c["name"] == club_name][0]
+        competition = [c for c in server.competitions if c["name"] == competition_name][0]
+        with pytest.raises(type_exception):
+            server.purchase_conditions(placesRequired, club, competition)
+
+    def test_raise_exception_with_input_is_negative_number(self, monkeypatch):
+        # Test should return LowerThanOneError Exception with placesRequired < 1.
+        data_test = {"club": "Simply Lift", "competition": "Spring Festival", "places": -2}
+        self._raise_exception(
+            data_test["club"], data_test["competition"], data_test["places"], utils.LowerThanOneError, monkeypatch
+        )
+
+    def test_raise_exception_with_purchase_more_than_twelves_places(self, monkeypatch):
+        # Test should return PlacesError Exception with placesRequired > 12.
+        data_test = {"club": "toto", "competition": "Spring Festival", "places": 13}
+        self._raise_exception(
+            data_test["club"], data_test["competition"], data_test["places"], utils.PlacesError, monkeypatch
+        )
+
+    def test_raise_exception_with_purchase_more_than_club_points(self, monkeypatch):
+        # Test should return PlacesError Exception with placesRequired > club's points.
+        data_test = {"club": "toto", "competition": "Spring Festival", "places": 7}
+        self._raise_exception(
+            data_test["club"], data_test["competition"], data_test["places"], utils.PlacesError, monkeypatch
+        )
+
+    def test_raise_exception_with_purchase_more_places_than_available(self, monkeypatch):
+        # Test should return PlacesError Exception with placesRequired > places available in the competition.
+        data_test = {"club": "tata", "competition": "next competition", "places": 3}
+        self._raise_exception(
+            data_test["club"], data_test["competition"], data_test["places"], utils.PlacesError, monkeypatch
+        )
+
+    def test_raise_exception_with_several_orders_with_more_than_twelves_places_in_total(self, monkeypatch):
+        # Test should return PlacesError Exception with placesRequired > 12 (with several orders).
+        data_test = {"club": "club_with_competition_booked", "competition": "Spring Festival", "places": 7}
+        self._raise_exception(
+            data_test["club"], data_test["competition"], data_test["places"], utils.PlacesError, monkeypatch
+        )
 
     def test_booking_with_purchase_more_than_club_points(self, client, monkeypatch, captured_templates):
         """
@@ -290,3 +313,23 @@ class TestBooking(Utils):
         assert template.name == "booking.html"
         assert context["club"]["name"] == self.future_competition["club"]
         assert context["competition"]["name"] == self.future_competition["competition"]
+
+    """def test_update_numbers_places_booked(self, client, monkeypatch, captured_templates):
+        data_test = {"club": "club_with_competition_booked", "competition": "Spring Festival", "places": 2}
+        self._mock_club_and_competition(monkeypatch)
+        # We get club point before request.
+        club = [c for c in server.clubs if c["name"] == data_test["club"]][0]
+        competition_booked = [c for c in club["competitions_booked"] if c["name"] == data_test["competition"]][0]
+        number_places_booked_in_competition = competition_booked["numbers_places_booked"]
+
+        rv = client.post("/purchasePlaces", data=data_test)
+        assert rv.status_code == 200
+        template, context = captured_templates[0]
+        # Checking of deduction of points and  the context returned are those of the requested club.
+
+        competition_booked_after = [c for c in club["competitions_booked"] if c["name"] == data_test["competition"]][0]
+        assert context["club"]["name"] == data_test["club"]
+        assert (
+            competition_booked_after["numbers_places_booked"]
+            == number_places_booked_in_competition + data_test["places"]
+        )"""
