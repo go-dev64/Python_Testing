@@ -96,6 +96,14 @@ def purchase_conditions(placesRequired, club, competition):
                 raise PlacesError(nombre_max_places=12)
 
 
+def update_competition_booked_by_the_club(placesRequired, club, competition):
+    if "competitions_booked" not in club:
+        club["competitions_booked"] = []
+        club["competitions_booked"].append({"name": competition["name"], "numbers_places_booked": 0})
+    if competition["name"] not in club["competitions_booked"]:
+        club["competitions_booked"].append({"name": competition["name"], "numbers_places_booked": 0})
+
+
 @bp.route("/purchasePlaces", methods=["POST"])
 def purchasePlaces():
     error = None
@@ -118,11 +126,7 @@ def purchasePlaces():
         return render_template("booking.html", club=club, competition=competition, error=error), 400
 
     else:
-        if "competitions_booked" not in club:
-            club["competitions_booked"] = []
-            club["competitions_booked"].append({"name": competition["name"], "numbers_places_booked": 0})
-        if competition["name"] not in club["competitions_booked"]:
-            club["competitions_booked"].append({"name": competition["name"], "numbers_places_booked": 0})
+        update_competition_booked_by_the_club(club=club, competition=competition, placesRequired=placesRequired)
         club["points"] = int(club["points"]) - placesRequired
         update_competition_booked = [c for c in club["competitions_booked"] if c["name"] == competition["name"]][0]
         update_competition_booked["numbers_places_booked"] += placesRequired
