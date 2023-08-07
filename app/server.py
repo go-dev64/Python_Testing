@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, flash, url_for
 from app.custom_exception import LowerThanOneError, PlacesError
-from app.utils import update_competition_booked_by_the_club, purchase_conditions
+from app.utils import find_element, purchase_conditions, update_competition_booked_by_the_club
 
 bp = Blueprint("server", __name__)
 
@@ -44,8 +44,8 @@ def showSummary():
 def book(competition, club):
     error = None
     try:
-        foundClub = [c for c in clubs if c["name"] == club][0]
-        foundCompetition = [c for c in competitions if c["name"] == competition][0]
+        foundClub = find_element(clubs, club)
+        foundCompetition = find_element(competitions, competition)
         today = datetime.today().timestamp()
         date_of_competition = datetime.strptime(foundCompetition["date"], "%Y-%m-%d %H:%M:%S").timestamp()
         assert date_of_competition > today
@@ -64,8 +64,8 @@ def book(competition, club):
 def purchasePlaces():
     error = None
     try:
-        competition = [c for c in competitions if c["name"] == request.form["competition"]][0]
-        club = [c for c in clubs if c["name"] == request.form["club"]][0]
+        competition = find_element(competitions, request.form["competition"])
+        club = find_element(clubs, request.form["club"])
         placesRequired = int(request.form["places"])
         purchase_conditions(placesRequired, club, competition)
 
@@ -91,7 +91,7 @@ def purchasePlaces():
 
 @bp.route("/dashboard/<club>")
 def dashboard(club):
-    foundClub = [c for c in clubs if c["name"] == club][0]
+    foundClub = find_element(clubs, club)
     if foundClub:
         return render_template("dashboard.html", club=foundClub, list_of_clubs=clubs)
     else:
