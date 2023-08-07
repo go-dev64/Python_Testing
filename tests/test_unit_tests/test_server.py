@@ -2,7 +2,7 @@ import pytest
 from flask import url_for, request
 from app import custom_exception, server
 
-from tests.test_utils import Utils
+from tests.mock import Utils
 
 
 class TestEmail(Utils):
