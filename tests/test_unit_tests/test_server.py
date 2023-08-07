@@ -1,6 +1,6 @@
 import pytest
 from flask import url_for, request
-from app import server, utils
+from app import custom_exception, server
 
 from tests.test_utils import Utils
 
@@ -216,35 +216,39 @@ class TestBooking(Utils):
         # Test should return LowerThanOneError Exception with placesRequired < 1.
         data_test = {"club": "Simply Lift", "competition": "Spring Festival", "places": -2}
         self._raise_exception(
-            data_test["club"], data_test["competition"], data_test["places"], utils.LowerThanOneError, monkeypatch
+            data_test["club"],
+            data_test["competition"],
+            data_test["places"],
+            custom_exception.LowerThanOneError,
+            monkeypatch,
         )
 
     def test_raise_exception_with_purchase_more_than_twelves_places(self, monkeypatch):
         # Test should return PlacesError Exception with placesRequired > 12.
         data_test = {"club": "toto", "competition": "Spring Festival", "places": 13}
         self._raise_exception(
-            data_test["club"], data_test["competition"], data_test["places"], utils.PlacesError, monkeypatch
+            data_test["club"], data_test["competition"], data_test["places"], custom_exception.PlacesError, monkeypatch
         )
 
     def test_raise_exception_with_purchase_more_than_club_points(self, monkeypatch):
         # Test should return PlacesError Exception with placesRequired > club's points.
         data_test = {"club": "toto", "competition": "Spring Festival", "places": 7}
         self._raise_exception(
-            data_test["club"], data_test["competition"], data_test["places"], utils.PlacesError, monkeypatch
+            data_test["club"], data_test["competition"], data_test["places"], custom_exception.PlacesError, monkeypatch
         )
 
     def test_raise_exception_with_purchase_more_places_than_available(self, monkeypatch):
         # Test should return PlacesError Exception with placesRequired > places available in the competition.
         data_test = {"club": "tata", "competition": "next competition", "places": 3}
         self._raise_exception(
-            data_test["club"], data_test["competition"], data_test["places"], utils.PlacesError, monkeypatch
+            data_test["club"], data_test["competition"], data_test["places"], custom_exception.PlacesError, monkeypatch
         )
 
     def test_raise_exception_with_several_orders_with_more_than_twelves_places_in_total(self, monkeypatch):
         # Test should return PlacesError Exception with placesRequired > 12 (with several orders).
         data_test = {"club": "club_with_competition_booked", "competition": "Spring Festival", "places": 7}
         self._raise_exception(
-            data_test["club"], data_test["competition"], data_test["places"], utils.PlacesError, monkeypatch
+            data_test["club"], data_test["competition"], data_test["places"], custom_exception.PlacesError, monkeypatch
         )
 
     def test_booking_with_purchase_more_than_club_points(self, client, monkeypatch, captured_templates):

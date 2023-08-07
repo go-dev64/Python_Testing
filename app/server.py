@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, flash, url_for
-from app.utils import LowerThanOneError, PlacesError
+from app.custom_exception import LowerThanOneError, PlacesError
 
 bp = Blueprint("server", __name__)
 
