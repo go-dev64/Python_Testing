@@ -23,7 +23,17 @@ def update_competition_places_available(competition, numbers_places_ordered):
 
 
 def update_of_numbers_of_places_reserved_by_the_club(numbers_places_ordered, club, competition):
-    # update numbers places reserved by the club for the competition.
+    """
+    If it does not exist, add a new key to club dict, which will be a list of reserverd competitions,
+    with a dict of competition and number places reserved, by the club.
+    Elif it does not exist, add , to list, dict of cometition reserved with number of places reserved.
+    Else, adds the number of places ordered to the number of places already reserved for the competition.
+
+    Args:
+        numbers_places_ordered (_type_): _description_
+        club (_type_): _description_
+        competition (_type_): _description_
+    """
     if "competitions_booked" not in club:
         club["competitions_booked"] = [{"name": competition["name"], "numbers_places_booked": numbers_places_ordered}]
     elif len([x for x in club["competitions_booked"] if x["name"] == competition["name"]]) == 0:
