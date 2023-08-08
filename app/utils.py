@@ -10,14 +10,18 @@ def find_element(iterable, condition):
     return [x for x in iterable if x["name"] == condition][0]
 
 
+def update_points_of_club(club, placesRequired):
+    club["points"] = int(club["points"]) - placesRequired
+
+
 def update_competition_booked_by_the_club(placesRequired, club, competition):
     if "competitions_booked" not in club:
-        club["competitions_booked"] = []
-        club["competitions_booked"].append({"name": competition["name"], "numbers_places_booked": 0})
-    if competition["name"] not in club["competitions_booked"]:
-        club["competitions_booked"].append({"name": competition["name"], "numbers_places_booked": 0})
-    update_competition_booked = find_element(club["competitions_booked"], competition["name"])
-    update_competition_booked["numbers_places_booked"] += placesRequired
+        club["competitions_booked"] = [{"name": competition["name"], "numbers_places_booked": placesRequired}]
+    elif len([x for x in club["competitions_booked"] if x["name"] == competition["name"]]) == 0:
+        club["competitions_booked"].append({"name": competition["name"], "numbers_places_booked": placesRequired})
+    else:
+        update_competition_booked = find_element(club["competitions_booked"], competition["name"])
+        update_competition_booked["numbers_places_booked"] += placesRequired
 
 
 def purchase_conditions(placesRequired, club, competition):

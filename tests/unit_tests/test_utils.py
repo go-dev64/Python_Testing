@@ -2,7 +2,7 @@ import pytest
 from app.utils import find_element
 from app.custom_exception import LowerThanOneError, PlacesError
 from tests.mock import Utils
-from app import server
+from app import server, utils
 
 
 class TestUtils(Utils):
@@ -14,6 +14,14 @@ class TestUtils(Utils):
         club_returned = find_element(clubs, club_name)
         assert club_returned["name"] == club_name
         assert club_returned["email"] == data_test["email"]
+
+    def test_update_points_of_club(self, monkeypatch):
+        data_test = {"club": "toto", "order_places": 2}
+        self._mock_club_and_competition(monkeypatch)
+        club = find_element(server.clubs, data_test["club"])
+        number_points_after_order = int(club["points"])
+        utils.update_points_of_club(club=club, placesRequired=int(data_test["order_places"]))
+        assert club["points"] == number_points_after_order - int(data_test["order_places"])
 
     def test_update_numbers_places_booked(self, monkeypatch):
         """
