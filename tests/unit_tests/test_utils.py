@@ -20,10 +20,18 @@ class TestUtils(Utils):
         self._mock_club_and_competition(monkeypatch)
         club = find_element(server.clubs, data_test["club"])
         number_points_after_order = int(club["points"])
-        utils.update_points_of_club(club=club, placesRequired=int(data_test["order_places"]))
+        utils.update_points_of_club(club=club, numbers_places_ordered=int(data_test["order_places"]))
         assert club["points"] == number_points_after_order - int(data_test["order_places"])
 
-    def test_update_numbers_places_booked(self, monkeypatch):
+    def test_update_competition_places_available(self, monkeypatch):
+        data_test = {"competition": "Spring Festival", "order_places": 2}
+        self._mock_club_and_competition(monkeypatch)
+        competition = find_element(server.competitions, data_test["competition"])
+        places_available_after_order = int(competition["numberOfPlaces"])
+        utils.update_competition_places_available(competition, data_test["order_places"])
+        assert competition["numberOfPlaces"] == places_available_after_order - int(data_test["order_places"])
+
+    def test_update_of_numbers_of_places_reserved_by_the_club(self, monkeypatch):
         """
         The test must add the places ordered by the competition's key: numbers_places_booked to the club's:competitions_booked list.
 
@@ -35,7 +43,9 @@ class TestUtils(Utils):
         competition = [c for c in server.competitions if c["name"] == "Spring Festival"][0]
         places_ordered = 2
         excepted_result = 9
-        server.update_competition_booked_by_the_club(club=club, competition=competition, placesRequired=places_ordered)
+        server.update_of_numbers_of_places_reserved_by_the_club(
+            club=club, competition=competition, placesRequired=places_ordered
+        )
         competition_booked = find_element(club["competitions_booked"], "Spring Festival")
         assert competition_booked["numbers_places_booked"] == excepted_result
 

@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, flash, url_for
 from app.custom_exception import LowerThanOneError, PastCompetitionError, PlacesError
-from app.utils import find_element, purchase_conditions, update_competition_booked_by_the_club
+from app.utils import find_element, purchase_conditions, update_of_numbers_of_places_reserved_by_the_club
 
 bp = Blueprint("server", __name__)
 
@@ -82,7 +82,9 @@ def purchasePlaces():
         return render_template("booking.html", club=club, competition=competition, error=error), 400
 
     else:
-        update_competition_booked_by_the_club(club=club, competition=competition, placesRequired=placesRequired)
+        update_of_numbers_of_places_reserved_by_the_club(
+            club=club, competition=competition, placesRequired=placesRequired
+        )
         club["points"] = int(club["points"]) - placesRequired
         competition["numberOfPlaces"] = int(competition["numberOfPlaces"]) - placesRequired
         flash("Great-booking complete!")

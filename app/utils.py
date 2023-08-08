@@ -10,11 +10,20 @@ def find_element(iterable, condition):
     return [x for x in iterable if x["name"] == condition][0]
 
 
-def update_points_of_club(club, placesRequired):
-    club["points"] = int(club["points"]) - placesRequired
+def update_points_of_club(club, numbers_places_ordered):
+    # Updating the number of club points after an order
+
+    club["points"] = int(club["points"]) - numbers_places_ordered
 
 
-def update_competition_booked_by_the_club(placesRequired, club, competition):
+def update_competition_places_available(competition, numbers_places_ordered):
+    # Updating the number of places availables after an order
+
+    competition["numberOfPlaces"] = int(competition["numberOfPlaces"]) - numbers_places_ordered
+
+
+def update_of_numbers_of_places_reserved_by_the_club(placesRequired, club, competition):
+    # update numbers places reserved by the club for the competition.
     if "competitions_booked" not in club:
         club["competitions_booked"] = [{"name": competition["name"], "numbers_places_booked": placesRequired}]
     elif len([x for x in club["competitions_booked"] if x["name"] == competition["name"]]) == 0:
