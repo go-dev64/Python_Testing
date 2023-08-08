@@ -91,12 +91,14 @@ def purchasePlaces():
 
 @bp.route("/dashboard/<club>")
 def dashboard(club):
-    foundClub = find_element(clubs, club)
-    if foundClub:
-        return render_template("dashboard.html", club=foundClub, list_of_clubs=clubs)
-    else:
+    try:
+        foundClub = find_element(clubs, club)
+    except:
         flash("Something went wrong-please try again")
-        return render_template("welcome.html", club=club, competitions=competitions)
+        return render_template("welcome.html", club=club, competitions=competitions), 400
+
+    else:
+        return render_template("dashboard.html", club=foundClub, list_of_clubs=clubs)
 
 
 @bp.route("/logout")
