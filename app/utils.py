@@ -22,15 +22,24 @@ def update_competition_places_available(competition, numbers_places_ordered):
     competition["numberOfPlaces"] = int(competition["numberOfPlaces"]) - numbers_places_ordered
 
 
-def update_of_numbers_of_places_reserved_by_the_club(placesRequired, club, competition):
+def update_of_numbers_of_places_reserved_by_the_club(numbers_places_ordered, club, competition):
     # update numbers places reserved by the club for the competition.
     if "competitions_booked" not in club:
-        club["competitions_booked"] = [{"name": competition["name"], "numbers_places_booked": placesRequired}]
+        club["competitions_booked"] = [{"name": competition["name"], "numbers_places_booked": numbers_places_ordered}]
     elif len([x for x in club["competitions_booked"] if x["name"] == competition["name"]]) == 0:
-        club["competitions_booked"].append({"name": competition["name"], "numbers_places_booked": placesRequired})
+        club["competitions_booked"].append(
+            {"name": competition["name"], "numbers_places_booked": numbers_places_ordered}
+        )
     else:
         update_competition_booked = find_element(club["competitions_booked"], competition["name"])
-        update_competition_booked["numbers_places_booked"] += placesRequired
+        update_competition_booked["numbers_places_booked"] += numbers_places_ordered
+
+
+def update_data_club_and_competition(club, competition, numbers_places_ordered):
+    # Update club's points and numbres of places booked of comeption, and competition places availables.
+    update_of_numbers_of_places_reserved_by_the_club(numbers_places_ordered, club, competition)
+    update_points_of_club(club, numbers_places_ordered)
+    update_competition_places_available(competition, numbers_places_ordered)
 
 
 def purchase_conditions(placesRequired, club, competition):
@@ -44,9 +53,6 @@ def purchase_conditions(placesRequired, club, competition):
 
     Raises:
         LowerThanOneError: Exception for a order with fewer places than 1.
-        PlacesError: _description_
-        PlacesError: _description_
-        PlacesError: _description_
         PlacesError: _description_
     """
     if placesRequired < 1:

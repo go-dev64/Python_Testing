@@ -43,8 +43,8 @@ class TestUtils(Utils):
         competition = [c for c in server.competitions if c["name"] == "Spring Festival"][0]
         places_ordered = 2
         excepted_result = 9
-        server.update_of_numbers_of_places_reserved_by_the_club(
-            club=club, competition=competition, placesRequired=places_ordered
+        utils.update_of_numbers_of_places_reserved_by_the_club(
+            club=club, competition=competition, numbers_places_ordered=places_ordered
         )
         competition_booked = find_element(club["competitions_booked"], "Spring Festival")
         assert competition_booked["numbers_places_booked"] == excepted_result
