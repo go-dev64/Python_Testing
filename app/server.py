@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, flash, url_for
 from app.custom_exception import LowerThanOneError, PastCompetitionError, PlacesError
-from app.utils import find_element, purchase_conditions, update_data_club_and_competition
+from app.utils import find_element, order_conditions, update_data_club_and_competition
 
 bp = Blueprint("server", __name__)
 
@@ -67,7 +67,7 @@ def purchasePlaces():
         competition = find_element(competitions, request.form["competition"])
         club = find_element(clubs, request.form["club"])
         placesRequired = int(request.form["places"])
-        purchase_conditions(placesRequired, club, competition)
+        order_conditions(placesRequired, club, competition)
 
     except LowerThanOneError as exc:
         error = exc

@@ -54,7 +54,7 @@ class TestUtils(Utils):
         club = find_element(server.clubs, club_name)
         competition = find_element(server.competitions, competition_name)
         with pytest.raises(type_exception):
-            server.purchase_conditions(placesRequired, club, competition)
+            server.order_conditions(placesRequired, club, competition)
 
     def test_raise_exception_with_input_is_negative_number(self, monkeypatch):
         # Test should return LowerThanOneError Exception with placesRequired < 1.

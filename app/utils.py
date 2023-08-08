@@ -42,7 +42,7 @@ def update_data_club_and_competition(club, competition, numbers_places_ordered):
     update_competition_places_available(competition, numbers_places_ordered)
 
 
-def purchase_conditions(placesRequired, club, competition):
+def order_conditions(placesRequired, club, competition):
     """
     Defines the conditions for ordering competitions places and raise exceptions if conditions is not respected.
 
