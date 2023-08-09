@@ -37,7 +37,7 @@ def showSummary():
         error = "Oups, Email inconnue!"
         return render_template("index.html", error=error), 400
     else:
-        return render_template("welcome.html", club=club, competitions=competitions, list_of_clubs=clubs)
+        return render_template("welcome.html", club=club, competitions=competitions)
 
 
 @bp.route("/book/<competition>/<club>")
@@ -52,10 +52,10 @@ def book(competition, club):
             raise PastCompetitionError()
     except PastCompetitionError as msg:
         flash(msg)
-        return render_template("welcome.html", club=foundClub, competitions=competitions, list_of_clubs=clubs), 400
+        return render_template("welcome.html", club=foundClub, competitions=competitions), 400
     except:
         flash("Error: Something went wrong-please try again")
-        return render_template("welcome.html", club=club, competitions=competitions, list_of_clubs=clubs), 400
+        return render_template("welcome.html", club=club, competitions=competitions), 400
     else:
         return render_template("booking.html", club=foundClub, competition=foundCompetition)
 

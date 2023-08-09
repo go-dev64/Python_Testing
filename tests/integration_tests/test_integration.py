@@ -24,6 +24,7 @@ class TestIntegration(Utils):
         assert context["club"]["email"] == "admin@irontemple.com"
 
     def test_update_numbers_places_booked(self, client, monkeypatch, captured_templates):
+        # Should return a number of places booked of cluf updated.
         data_test = {"club": "club_with_competition_booked", "competition": "Spring Festival", "places": 2}
         self._mock_club_and_competition(monkeypatch)
         # We get club point before request.
@@ -34,8 +35,8 @@ class TestIntegration(Utils):
         rv = client.post("/purchasePlaces", data=data_test)
         assert rv.status_code == 200
         template, context = captured_templates[0]
-        # Checking of deduction of points and  the context returned are those of the requested club.
 
+        # Checking of deduction of points and  the context returned are those of the requested club.
         competition_booked_after = [c for c in club["competitions_booked"] if c["name"] == data_test["competition"]][0]
         assert context["club"]["name"] == data_test["club"]
         assert (
