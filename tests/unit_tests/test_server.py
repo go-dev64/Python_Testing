@@ -100,21 +100,18 @@ class TestEmail(Utils):
 
 
 class TestBooking(Utils):
-    def setup_method(self):
-        self.data = {"club": "toto", "competition": "Spring Festival", "places": 2}
-        self.future_competition = {"club": "toto", "competition": "next competition", "places": 2}
-
     def test_input_is_positive_number(self, client, monkeypatch, captured_templates):
         """
         Should return a status_code 200 with 12 > order > 0.
         """
+        data_test = {"club": "toto", "competition": "Spring Festival", "places": 2}
         rv, template, context = self.get_response_value_and_template_context(
             captured_templates=captured_templates,
             client=client,
             method="POST",
             monkeypatch=monkeypatch,
             route="/purchasePlaces",
-            data=self.data,
+            data=data_test,
         )
 
         assert rv.status_code == 200
@@ -159,7 +156,8 @@ class TestBooking(Utils):
         """
         Should return a status_code 400 with date competition < today.
         """
-        route = f"/book/{self.data['competition']}/{self.data['club']}"
+        data_test = {"club": "toto", "competition": "Spring Festival", "places": 2}
+        route = f"/book/{data_test['competition']}/{data_test['club']}"
         rv, template, context = self.get_response_value_and_template_context(
             captured_templates=captured_templates,
             client=client,
@@ -172,8 +170,8 @@ class TestBooking(Utils):
         assert template.name == "welcome.html"
 
     def test_book_with_unknown_club(self, client, monkeypatch, captured_templates):
+        # Test should return a status code 400 with a unknown club.
         data_test = {"club": "bad_club", "competition": "Spring Festival"}
-        self._mock_club_and_competition(monkeypatch)
         route = f"/book/{data_test['competition']}/{data_test['club']}"
         rv, template, context = self.get_response_value_and_template_context(
             captured_templates=captured_templates,
@@ -188,8 +186,8 @@ class TestBooking(Utils):
         assert b"Error: Something went wrong-please try again" in rv.data
 
     def test_book_with_unknown_competition(self, client, monkeypatch, captured_templates):
+        # Test should return a status code 400 with a unknown competition.
         data_test = {"club": "toto", "competition": "bad competition"}
-        self._mock_club_and_competition(monkeypatch)
         route = f"/book/{data_test['competition']}/{data_test['club']}"
         rv, template, context = self.get_response_value_and_template_context(
             captured_templates=captured_templates,
@@ -204,8 +202,8 @@ class TestBooking(Utils):
         assert b"Error: Something went wrong-please try again" in rv.data
 
     def test_book_with_unknown_competition_and_club(self, client, monkeypatch, captured_templates):
+        # Test should return a status code 400 with a unknown competition and club.
         data_test = {"club": "bad_club", "competition": "bad competition"}
-        self._mock_club_and_competition(monkeypatch)
         route = f"/book/{data_test['competition']}/{data_test['club']}"
         rv, template, context = self.get_response_value_and_template_context(
             captured_templates=captured_templates,
@@ -223,7 +221,8 @@ class TestBooking(Utils):
         """
         Test Should return a status_code 200 with date competition > today.
         """
-        route = f"/book/{self.future_competition['competition']}/{self.future_competition['club']}"
+        data_test = {"club": "toto", "competition": "next competition", "places": 2}
+        route = f"/book/{data_test['competition']}/{data_test['club']}"
         rv, template, context = self.get_response_value_and_template_context(
             captured_templates=captured_templates,
             client=client,
@@ -234,5 +233,5 @@ class TestBooking(Utils):
 
         assert rv.status_code == 200
         assert template.name == "booking.html"
-        assert context["club"]["name"] == self.future_competition["club"]
-        assert context["competition"]["name"] == self.future_competition["competition"]
+        assert context["club"]["name"] == data_test["club"]
+        assert context["competition"]["name"] == data_test["competition"]
