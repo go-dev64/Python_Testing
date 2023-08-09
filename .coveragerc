@@ -1,2 +1,2 @@
 [run]
-omit = config.py, test_integrations.py
+omit = config.py, test_integration.py

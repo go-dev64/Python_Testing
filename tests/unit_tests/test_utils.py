@@ -59,48 +59,76 @@ class TestUtils(Utils):
         competition_booked = find_element(club["competitions_booked"], "Spring Festival")
         assert competition_booked["numbers_places_booked"] == excepted_result
 
-    def _raise_exception(self, club_name, competition_name, placesRequired, type_exception, monkeypatch):
+    def _raise_exception(self, club_name, competition_name, placesRequired, type_exception, monkeypatch, msg_error):
         self._mock_club_and_competition(monkeypatch)
         club = find_element(server.clubs, club_name)
         competition = find_element(server.competitions, competition_name)
-        with pytest.raises(type_exception):
+        with pytest.raises(type_exception) as exc_info:
             server.order_conditions(placesRequired, club, competition)
+
+        assert str(exc_info.value) == msg_error
 
     def test_raise_exception_with_input_is_negative_number(self, monkeypatch):
         # Test should return LowerThanOneError Exception with placesRequired < 1.
         data_test = {"club": "Simply Lift", "competition": "Spring Festival", "places": -2}
+        execpted_message = "Please enter a number greater than zero!"
         self._raise_exception(
             data_test["club"],
             data_test["competition"],
             data_test["places"],
             LowerThanOneError,
             monkeypatch,
+            execpted_message,
         )
 
     def test_raise_exception_with_purchase_more_than_twelves_places(self, monkeypatch):
         # Test should return PlacesError Exception with placesRequired > 12.
         data_test = {"club": "toto", "competition": "Spring Festival", "places": 13}
+        execpted_message = "The maximum reservation is 12 places!"
         self._raise_exception(
-            data_test["club"], data_test["competition"], data_test["places"], PlacesError, monkeypatch
+            data_test["club"],
+            data_test["competition"],
+            data_test["places"],
+            PlacesError,
+            monkeypatch,
+            execpted_message,
         )
 
     def test_raise_exception_with_purchase_more_than_club_points(self, monkeypatch):
         # Test should return PlacesError Exception with placesRequired > club's points.
         data_test = {"club": "toto", "competition": "Spring Festival", "places": 7}
+        execpted_message = "You can book 5 places maximum!"
         self._raise_exception(
-            data_test["club"], data_test["competition"], data_test["places"], PlacesError, monkeypatch
+            data_test["club"],
+            data_test["competition"],
+            data_test["places"],
+            PlacesError,
+            monkeypatch,
+            execpted_message,
         )
 
     def test_raise_exception_with_purchase_more_places_than_available(self, monkeypatch):
         # Test should return PlacesError Exception with placesRequired > places available in the competition.
         data_test = {"club": "tata", "competition": "next competition", "places": 3}
+        execpted_message = "There are only 2 places available!"
         self._raise_exception(
-            data_test["club"], data_test["competition"], data_test["places"], PlacesError, monkeypatch
+            data_test["club"],
+            data_test["competition"],
+            data_test["places"],
+            PlacesError,
+            monkeypatch,
+            execpted_message,
         )
 
     def test_raise_exception_with_several_orders_with_more_than_twelves_places_in_total(self, monkeypatch):
         # Test should return PlacesError Exception with placesRequired > 12 (with several orders).
         data_test = {"club": "club_with_competition_booked", "competition": "Spring Festival", "places": 7}
+        execpted_message = "The maximum reservation is 12 places!"
         self._raise_exception(
-            data_test["club"], data_test["competition"], data_test["places"], PlacesError, monkeypatch
+            data_test["club"],
+            data_test["competition"],
+            data_test["places"],
+            PlacesError,
+            monkeypatch,
+            execpted_message,
         )
