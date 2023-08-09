@@ -1,11 +1,28 @@
 import pytest
 from flask import url_for, request
 from app import server
+from app.utils import find_element
 
 from tests.mock import Utils
 
 
 class TestIntegration(Utils):
+    def test_data_returned(self, client, monkeypatch, captured_templates):
+        """
+        test should return wright context email and list of clubs.
+        """
+        # Check whether the context returned is that of the e-mail supplied.
+        rv, template, context = self.get_response_value_and_template_context(
+            captured_templates=captured_templates,
+            client=client,
+            method="POST",
+            monkeypatch=monkeypatch,
+            route="/showSummary",
+            data={"email": "admin@irontemple.com"},
+        )
+
+        assert context["club"]["email"] == "admin@irontemple.com"
+
     def test_update_numbers_places_booked(self, client, monkeypatch, captured_templates):
         data_test = {"club": "club_with_competition_booked", "competition": "Spring Festival", "places": 2}
         self._mock_club_and_competition(monkeypatch)
@@ -87,3 +104,20 @@ class TestIntegration(Utils):
         )
         assert rv.status_code == 400
         assert str(context["error"]) == f"There are only {context['competition']['numberOfPlaces']} places available!"
+
+    def test_update_point_club(self, client, monkeypatch, captured_templates):
+        """
+        We are testing if ,after registering  for acompetition,
+        the number of entries is deducted from club's points.
+        """
+        data_test = {"club": "toto", "competition": "Spring Festival", "places": 2}
+        self._mock_club_and_competition(monkeypatch)
+        # We get club point before request.
+        club = find_element(server.clubs, data_test["club"])
+        nombre_point = int(club["points"])
+        rv = client.post("/purchasePlaces", data=data_test)
+        assert rv.status_code == 200
+        template, context = captured_templates[0]
+        # Checking of deduction of points and  the context returned are those of the requested club.
+        assert context["club"]["name"] == data_test["club"]
+        assert int(context["club"]["points"]) == nombre_point - data_test["places"]
