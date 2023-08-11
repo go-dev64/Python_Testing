@@ -23,6 +23,27 @@ class TestIntegration(Utils):
 
         assert context["club"]["email"] == "admin@irontemple.com"
 
+    def test_input_is_positive_number(self, client, monkeypatch, captured_templates):
+        """
+        Should return a status_code 200 with 12 > order > 0.
+        """
+        data_test = {"club": "toto", "competition": "Spring Festival", "places": 2}
+        rv, template, context = self.get_response_value_and_template_context(
+            captured_templates=captured_templates,
+            client=client,
+            method="POST",
+            monkeypatch=monkeypatch,
+            route="/purchasePlaces",
+            data=data_test,
+        )
+
+        assert rv.status_code == 200
+        assert template.name == "welcome.html"
+        club = [c for c in server.clubs if c["name"] == data_test["club"]][0]
+        competition_booked = [c for c in club["competitions_booked"] if c["name"] == data_test["competition"]][0]
+        number_places_booked_in_competition = competition_booked["numbers_places_booked"]
+        assert number_places_booked_in_competition == data_test["places"]
+
     def test_update_numbers_places_booked(self, client, monkeypatch, captured_templates):
         # Should return a number of places booked of cluf updated.
         data_test = {"club": "club_with_competition_booked", "competition": "Spring Festival", "places": 2}

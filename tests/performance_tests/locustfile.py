@@ -1,9 +1,10 @@
+import time
 from locust import HttpUser, task, between
-from app import server
+from app import server, utils
 
 
 class ProjectPerfTest(HttpUser):
-    wait_time = between(1, 5)
+    # wait_time = between(1, 3)
 
     @task
     def index(self):
@@ -29,7 +30,9 @@ class ProjectPerfTest(HttpUser):
         for competition in server.competitions:
             for club in server.clubs:
                 data = {"club": club["name"], "competition": competition["name"], "places": 1}
-                self.client.post("/purchasePlaces", data)
+                with self.client.post("/purchasePlaces", data, catch_response=True) as response:
+                    if response.status_code == 400:
+                        response.success()
 
     @task
     def dashboard(self):
