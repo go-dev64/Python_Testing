@@ -68,12 +68,12 @@ def purchasePlaces():
         placesRequired = int(request.form["places"])
         order_conditions(placesRequired, club, competition)
 
-    except LowerThanOneError as exc:
-        error = exc
+    except LowerThanOneError as msg:
+        error = msg
         return render_template("booking.html", club=club, competition=competition, error=error), 403
 
-    except PlacesError as exc:
-        error = exc
+    except PlacesError as msg:
+        error = msg
         return render_template("booking.html", club=club, competition=competition, error=error), 403
 
     except ValueError:
