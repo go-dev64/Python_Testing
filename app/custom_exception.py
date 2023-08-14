@@ -3,7 +3,7 @@ Custom Exception class module
 """
 
 
-class LowerThanOneError(BaseException):
+class LowerThanOneError(Exception):
     """
     Exception class for less than one place reserved.
     Return error message.
@@ -13,7 +13,7 @@ class LowerThanOneError(BaseException):
         return "Please enter a number greater than zero!"
 
 
-class PlacesError(BaseException):
+class PlacesError(Exception):
     def __init__(self, nombre_max_places, type_error=None):
         """
         Exception class for error number places.
@@ -47,7 +47,7 @@ class PlacesError(BaseException):
             return self.error_reservation_more_than_twelves_places()
 
 
-class PastCompetitionError(BaseException):
+class PastCompetitionError(Exception):
     """
     Exception class for completed competitions.
     Return error message.
@@ -57,7 +57,7 @@ class PastCompetitionError(BaseException):
         return "Error: Booking impossible, competiton already finished!"
 
 
-class FindElementError(BaseException):
+class FindElementError(Exception):
     """
     Exception class for error find element.
     """

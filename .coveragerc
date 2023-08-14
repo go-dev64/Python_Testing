@@ -1,2 +1,2 @@
 [run]
-omit = config.py
+omit = config.py, locustfile.py,
