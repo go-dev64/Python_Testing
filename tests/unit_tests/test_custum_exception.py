@@ -23,3 +23,7 @@ class TestException:
     def test_past_competition_error(self):
         test = PastCompetitionError()
         assert test.__str__() == "Error: Booking impossible, competiton already finished!"
+
+    def test_fnd_element_error(self):
+        test = FindElementError(element)
+        assert test.__str__() == "Error! element inconnue!"
