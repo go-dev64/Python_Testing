@@ -29,7 +29,7 @@ class TestEmail(Utils):
 
     def test_email_is_not_in_db(self, client, monkeypatch, captured_templates):
         """
-        Check if bad email return code status 400 and error message
+        Check if bad email return code status 403 and error message
         """
         rv, template, context = self.get_response_value_and_template_context(
             captured_templates=captured_templates,
@@ -39,7 +39,7 @@ class TestEmail(Utils):
             route="/showSummary",
             data=self.bad_email,
         )
-        assert rv.status_code == 400
+        assert rv.status_code == 403
         assert b"error" in rv.data
         assert template.name == "index.html"
 
@@ -88,7 +88,7 @@ class TestEmail(Utils):
             monkeypatch=monkeypatch,
             route=route,
         )
-        assert rv.status_code == 400
+        assert rv.status_code == 403
         assert template.name == "welcome.html"
 
     def test_redirect_index_page(self, client, monkeypatch):
@@ -119,7 +119,7 @@ class TestBooking(Utils):
 
     def test_input_is_negative_number(self, client, monkeypatch, captured_templates):
         """
-        Should return a status_code 400 with input < 0 and error message.
+        Should return a status_code 403 with input < 0 and error message.
         """
         data_test = {"club": "Simply Lift", "competition": "Spring Festival", "places": -2}
         rv, template, context = self.get_response_value_and_template_context(
@@ -131,12 +131,12 @@ class TestBooking(Utils):
             data=data_test,
         )
 
-        assert rv.status_code == 400
+        assert rv.status_code == 403
         assert template.name == "booking.html"
 
     def test_booking_with_input_is_not_number(self, client, monkeypatch, captured_templates):
         """
-        Should return a status_code 400 with input != number and error message.
+        Should return a status_code 403 with input != number and error message.
         """
         data_test = {"club": "Simply Lift", "competition": "Spring Festival", "places": "aaaaaa"}
         rv, template, context = self.get_response_value_and_template_context(
@@ -148,13 +148,13 @@ class TestBooking(Utils):
             data=data_test,
         )
 
-        assert rv.status_code == 400
+        assert rv.status_code == 403
         assert template.name == "booking.html"
         assert str(context["error"]) == "Please, Enter a number!"
 
     def test_booking_on_past_competition(self, client, monkeypatch, captured_templates):
         """
-        Should return a status_code 400 with date competition < today.
+        Should return a status_code 403 with date competition < today.
         """
         data_test = {"club": "toto", "competition": "Spring Festival", "places": 2}
         route = f"/book/{data_test['competition']}/{data_test['club']}"
@@ -166,11 +166,11 @@ class TestBooking(Utils):
             route=route,
         )
 
-        assert rv.status_code == 400
+        assert rv.status_code == 403
         assert template.name == "welcome.html"
 
     def test_book_with_unknown_club(self, client, monkeypatch, captured_templates):
-        # Test should return a status code 400 with a unknown club.
+        # Test should return a status code 403 with a unknown club.
         data_test = {"club": "bad_club", "competition": "Spring Festival"}
         route = f"/book/{data_test['competition']}/{data_test['club']}"
         rv, template, context = self.get_response_value_and_template_context(
@@ -181,12 +181,12 @@ class TestBooking(Utils):
             route=route,
         )
 
-        assert rv.status_code == 400
+        assert rv.status_code == 403
         assert template.name == "welcome.html"
         assert b"Error: Something went wrong-please try again" in rv.data
 
     def test_book_with_unknown_competition(self, client, monkeypatch, captured_templates):
-        # Test should return a status code 400 with a unknown competition.
+        # Test should return a status code 403 with a unknown competition.
         data_test = {"club": "toto", "competition": "bad competition"}
         route = f"/book/{data_test['competition']}/{data_test['club']}"
         rv, template, context = self.get_response_value_and_template_context(
@@ -197,12 +197,12 @@ class TestBooking(Utils):
             route=route,
         )
 
-        assert rv.status_code == 400
+        assert rv.status_code == 403
         assert template.name == "welcome.html"
         assert b"Error: Something went wrong-please try again" in rv.data
 
     def test_book_with_unknown_competition_and_club(self, client, monkeypatch, captured_templates):
-        # Test should return a status code 400 with a unknown competition and club.
+        # Test should return a status code 403 with a unknown competition and club.
         data_test = {"club": "bad_club", "competition": "bad competition"}
         route = f"/book/{data_test['competition']}/{data_test['club']}"
         rv, template, context = self.get_response_value_and_template_context(
@@ -213,7 +213,7 @@ class TestBooking(Utils):
             route=route,
         )
 
-        assert rv.status_code == 400
+        assert rv.status_code == 403
         assert template.name == "welcome.html"
         assert b"Error: Something went wrong-please try again" in rv.data
 

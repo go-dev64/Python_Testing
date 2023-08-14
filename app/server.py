@@ -35,7 +35,7 @@ def showSummary():
         club = [club for club in clubs if club["email"] == request.form["email"]][0]
     except:
         error = "Oups, Email inconnue!"
-        return render_template("index.html", error=error), 400
+        return render_template("index.html", error=error), 403
     else:
         return render_template("welcome.html", club=club, competitions=competitions)
 
@@ -52,10 +52,10 @@ def book(competition, club):
             raise PastCompetitionError()
     except PastCompetitionError as msg:
         flash(msg)
-        return render_template("welcome.html", club=foundClub, competitions=competitions), 400
+        return render_template("welcome.html", club=foundClub, competitions=competitions), 403
     except:
         flash("Error: Something went wrong-please try again")
-        return render_template("welcome.html", club=club, competitions=competitions), 400
+        return render_template("welcome.html", club=club, competitions=competitions), 403
     else:
         return render_template("booking.html", club=foundClub, competition=foundCompetition)
 
@@ -71,15 +71,15 @@ def purchasePlaces():
 
     except LowerThanOneError as exc:
         error = exc
-        return render_template("booking.html", club=club, competition=competition, error=error), 400
+        return render_template("booking.html", club=club, competition=competition, error=error), 403
 
     except PlacesError as exc:
         error = exc
-        return render_template("booking.html", club=club, competition=competition, error=error), 400
+        return render_template("booking.html", club=club, competition=competition, error=error), 403
 
     except ValueError:
         error = "Please, Enter a number!"
-        return render_template("booking.html", club=club, competition=competition, error=error), 400
+        return render_template("booking.html", club=club, competition=competition, error=error), 403
 
     else:
         update_data_club_and_competition(club=club, competition=competition, numbers_places_ordered=placesRequired)
@@ -93,7 +93,7 @@ def dashboard(club):
         foundClub = find_element(clubs, club)
     except:
         flash("Something went wrong-please try again")
-        return render_template("welcome.html", club=club, competitions=competitions), 400
+        return render_template("welcome.html", club=club, competitions=competitions), 403
 
     else:
         return render_template("dashboard.html", club=foundClub, list_of_clubs=clubs)

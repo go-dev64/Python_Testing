@@ -31,7 +31,7 @@ class ProjectPerfTest(HttpUser):
             for club in server.clubs:
                 data = {"club": club["name"], "competition": competition["name"], "places": 1}
                 with self.client.post("/purchasePlaces", data, catch_response=True) as response:
-                    if response.status_code == 400:
+                    if response.status_code == 403:
                         response.success()
 
     @task
