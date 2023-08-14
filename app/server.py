@@ -33,7 +33,7 @@ def showSummary():
     error = None
     try:
         club = [club for club in clubs if club["email"] == request.form["email"]][0]
-    except:
+    except Exception:
         error = "Oups, Email inconnue!"
         return render_template("index.html", error=error), 403
     else:
@@ -42,7 +42,6 @@ def showSummary():
 
 @bp.route("/book/<competition>/<club>")
 def book(competition, club):
-    error = None
     try:
         foundClub = find_element(clubs, club)
         foundCompetition = find_element(competitions, competition)
@@ -53,7 +52,7 @@ def book(competition, club):
     except PastCompetitionError as msg:
         flash(msg)
         return render_template("welcome.html", club=foundClub, competitions=competitions), 403
-    except:
+    except Exception:
         flash("Error: Something went wrong-please try again")
         return render_template("welcome.html", club=club, competitions=competitions), 403
     else:
@@ -91,7 +90,7 @@ def purchasePlaces():
 def dashboard(club):
     try:
         foundClub = find_element(clubs, club)
-    except:
+    except Exception:
         flash("Something went wrong-please try again")
         return render_template("welcome.html", club=club, competitions=competitions), 403
 

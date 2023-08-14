@@ -1,5 +1,3 @@
-import pytest
-from flask import url_for, request
 from app import server
 from app.utils import find_element
 

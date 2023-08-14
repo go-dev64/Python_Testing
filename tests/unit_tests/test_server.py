@@ -1,6 +1,4 @@
-import pytest
 from flask import url_for, request
-from app import server
 
 from tests.mock import Utils
 
@@ -42,23 +40,6 @@ class TestEmail(Utils):
         assert rv.status_code == 403
         assert b"error" in rv.data
         assert template.name == "index.html"
-
-    """def test_data_returned(self, client, monkeypatch, captured_templates):
-        
-        # test should return wright context email and list of clubs.
-        
-        # Check whether the context returned is that of the e-mail supplied.
-        rv, template, context = self.get_response_value_and_template_context(
-            captured_templates=captured_templates,
-            client=client,
-            method="POST",
-            monkeypatch=monkeypatch,
-            route="/showSummary",
-            data={"email": self.email},
-        )
-
-        assert context["club"]["email"] == self.email
-        assert len(context["list_of_clubs"]) > 0"""
 
     def test_dashboard(self, client, monkeypatch, captured_templates):
         """

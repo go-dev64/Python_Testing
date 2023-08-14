@@ -17,6 +17,7 @@ pytest-flask = "*"
 locust = "*"
 pytest-mock = "*"
 pytest-cov = "*"
+flake8 = "*"
 
 [dev-packages]
 

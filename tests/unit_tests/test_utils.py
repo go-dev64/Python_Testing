@@ -50,7 +50,8 @@ class TestUtils(Utils):
 
     def test_update_of_numbers_of_places_reserved_by_the_club(self, monkeypatch):
         """
-        The test must add the places ordered by the competition's key: numbers_places_booked to the club's:competitions_booked list.
+        The test must add the places ordered by the competition's key: numbers_places_booked
+        to the club's:competitions_booked list.
         """
         self._mock_club_and_competition(monkeypatch)
         club = find_element(server.clubs, "club_with_competition_booked")
