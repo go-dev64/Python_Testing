@@ -1,4 +1,4 @@
-from app.custom_exception import LowerThanOneError, PastCompetitionError, PlacesError
+from app.custom_exception import FindElementError, LowerThanOneError, PastCompetitionError, PlacesError
 
 
 class TestException:
@@ -25,5 +25,5 @@ class TestException:
         assert test.__str__() == "Error: Booking impossible, competiton already finished!"
 
     def test_fnd_element_error(self):
-        test = FindElementError(element)
-        assert test.__str__() == "Error! element inconnue!"
+        test = FindElementError("element")
+        assert test.__str__() == "Error: element inconnu!"
