@@ -1,9 +1,8 @@
+"""
+Module to  utils function.
+"""
+
 from app.custom_exception import LowerThanOneError, PlacesError
-
-
-"""
-Module to function
-"""
 
 
 def find_element(iterable, condition):

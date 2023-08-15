@@ -55,15 +55,3 @@ class PastCompetitionError(Exception):
 
     def __str__(self) -> str:
         return "Error: Booking impossible, competiton already finished!"
-
-
-class FindElementError(Exception):
-    """
-    Exception class for error find element.
-    """
-
-    def __init__(self, element):
-        self.element = element
-
-    def __str__(self) -> str:
-        return f"Error: {self.element} inconnu!"
