@@ -1,4 +1,4 @@
-from app.custom_exception import FindElementError, LowerThanOneError, PastCompetitionError, PlacesError
+from app.custom_exception import LowerThanOneError, PastCompetitionError, PlacesError
 
 
 class TestException:
