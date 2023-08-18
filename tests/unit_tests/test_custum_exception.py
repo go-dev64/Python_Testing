@@ -25,6 +25,9 @@ class TestException:
         assert test.__str__() == "There are only 5 places available!"
 
     def test_past_competition_error(self):
-        # Test should return a msg error "Error: Booking impossible, competiton already finished!" with old competition.
+        """
+        Test should return a msg error "Error: Booking impossible,
+        competiton already finished!" with old competition.
+        """
         test = PastCompetitionError()
         assert test.__str__() == "Error: Booking impossible, competiton already finished!"
